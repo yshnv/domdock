@@ -1,4 +1,7 @@
+export const instant = false;
+
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import DomainDetailClient from "./domain-detail-client";
 import { Suspense } from "react";
@@ -26,6 +29,7 @@ async function DomainDetailContent({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
   const { id } = await params;
   const supabase = await createClient();
 

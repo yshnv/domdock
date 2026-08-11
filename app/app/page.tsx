@@ -1,5 +1,9 @@
-import { redirect } from "next/navigation";
+export const instant = false;
 
-export default function AppRedirectPage() {
+import { redirect } from "next/navigation";
+import { connection } from "next/server";
+
+export default async function AppRedirectPage() {
+  await connection();
   redirect("/dashboard");
 }

@@ -1,3 +1,5 @@
+export const instant = false;
+
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ArcHeader } from "@/components/arc-header";

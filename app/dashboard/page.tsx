@@ -1,4 +1,7 @@
+export const instant = false;
+
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import DashboardClient from "./dashboard-client";
 import { Suspense } from "react";
@@ -18,6 +21,7 @@ export default function AppPage() {
 }
 
 async function AppContent() {
+  await connection();
   const supabase = await createClient();
   const {
     data: { user }

@@ -1,3 +1,5 @@
+export const instant = false;
+
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ForgotPasswordForm } from "@/components/forgot-password-form";
