@@ -7,6 +7,8 @@ import { ArcLogoWall } from "@/components/arc-logo-wall";
 import { DomainHealthWidget } from "@/components/domain-health-widget";
 import { DomDockLogo } from "@/components/domdock-logo";
 import { Analytics } from "@vercel/analytics/next";
+import packageJson from "@/package.json";
+
 const repositoryUrl = "https://github.com/yshnv/domdock";
 
 export default function Home() {
@@ -97,6 +99,9 @@ export default function Home() {
                   <DomDockLogo className="size-3 text-white" />
                 </span>
                 DomDock
+                <span className="rounded-[4px] bg-[#fffadd] px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#3139fb] border border-[#3139fb]/20">
+                  v{packageJson.version}
+                </span>
               </div>
               <span className="text-[#3139fb]/40">•</span>
               <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#3139fb]/80">
