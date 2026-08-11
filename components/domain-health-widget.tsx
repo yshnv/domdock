@@ -31,17 +31,39 @@ type DemoDomain = {
 const initialDomains: DemoDomain[] = [
   {
     id: "1",
-    name: "studio.dev",
-    registrar: "Namecheap",
-    expiresInDays: 8,
-    expiryDate: "Aug 19, 2026",
+    name: "linear.app",
+    registrar: "Namecheap Inc.",
+    expiresInDays: 12,
+    expiryDate: "Aug 23, 2026",
+    status: "warning",
+    sslStatus: "Expiring Soon",
+    dnsLatency: "12ms",
+    autoRenew: false
+  },
+  {
+    id: "2",
+    name: "github.com",
+    registrar: "MarkMonitor Inc.",
+    expiresInDays: 18,
+    expiryDate: "Aug 29, 2026",
     status: "warning",
     sslStatus: "Expiring Soon",
     dnsLatency: "14ms",
     autoRenew: false
   },
   {
-    id: "2",
+    id: "3",
+    name: "vercel.com",
+    registrar: "Cloudflare Inc.",
+    expiresInDays: 280,
+    expiryDate: "May 18, 2027",
+    status: "healthy",
+    sslStatus: "Valid (TLS 1.3)",
+    dnsLatency: "8ms",
+    autoRenew: true
+  },
+  {
+    id: "4",
     name: "arc.net",
     registrar: "Cloudflare Inc.",
     expiresInDays: 312,
@@ -52,32 +74,32 @@ const initialDomains: DemoDomain[] = [
     autoRenew: true
   },
   {
-    id: "3",
-    name: "api.ship.io",
-    registrar: "Gandi SAS",
-    expiresInDays: 44,
-    expiryDate: "Sep 24, 2026",
-    status: "healthy",
-    sslStatus: "Valid (TLS 1.3)",
-    dnsLatency: "18ms",
-    autoRenew: true
-  },
-  {
-    id: "4",
-    name: "domdock.io",
-    registrar: "Porkbun LLC",
-    expiresInDays: 180,
-    expiryDate: "Feb 07, 2027",
+    id: "5",
+    name: "supabase.com",
+    registrar: "Amazon Registrar",
+    expiresInDays: 195,
+    expiryDate: "Feb 22, 2027",
     status: "healthy",
     sslStatus: "Valid (TLS 1.3)",
     dnsLatency: "11ms",
+    autoRenew: true
+  },
+  {
+    id: "6",
+    name: "stripe.com",
+    registrar: "MarkMonitor Inc.",
+    expiresInDays: 160,
+    expiryDate: "Jan 18, 2027",
+    status: "healthy",
+    sslStatus: "Valid (TLS 1.3)",
+    dnsLatency: "15ms",
     autoRenew: true
   }
 ];
 
 function DomainAvatar({ name, isWarning }: { name: string; isWarning?: boolean }) {
   const [imgError, setImgError] = useState(false);
-  const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(name)}&sz=64`;
+  const faviconUrl = `https://favicone.com/${encodeURIComponent(name)}?s=64`;
 
   return (
     <div
@@ -422,7 +444,7 @@ export function DomainHealthWidget() {
                 RDAP Health Check executed
               </p>
               <p className="font-mono text-[11px] text-[#3139fb]/60">
-                studio.dev expiration synced. 8 days remaining. Warning flag
+                linear.app expiration synced. 12 days remaining. Warning flag
                 set.
               </p>
             </div>
@@ -435,7 +457,7 @@ export function DomainHealthWidget() {
                 Daily status check complete
               </p>
               <p className="font-mono text-[11px] text-[#3139fb]/60">
-                4/4 domains online and responding under 20ms latency.
+                6/6 domains online and responding under 15ms latency.
               </p>
             </div>
           </div>
