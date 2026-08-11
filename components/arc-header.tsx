@@ -44,6 +44,12 @@ export function ArcHeader() {
             Live Monitor
           </a>
           <Link
+            href="/dashboard"
+            className="text-primary font-bold transition-colors duration-100 ease-out hover:text-primary/80"
+          >
+            Dashboard
+          </Link>
+          <Link
             href="/about"
             className="transition-colors duration-100 ease-out hover:text-foreground"
           >

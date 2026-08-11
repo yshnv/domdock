@@ -1,14 +1,17 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
+  ArrowRight,
   CheckCircle2,
   Clock,
   ExternalLink,
   Globe,
+  LayoutDashboard,
   RefreshCw,
   Search,
-  Shield,
   Sparkles,
   Zap
 } from "lucide-react";
@@ -72,6 +75,34 @@ const initialDomains: DemoDomain[] = [
   }
 ];
 
+function DomainAvatar({ name, isWarning }: { name: string; isWarning?: boolean }) {
+  const [imgError, setImgError] = useState(false);
+  const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(name)}&sz=64`;
+
+  return (
+    <div
+      className={`relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-[10px] border shadow-sm transition-transform duration-150 group-hover:scale-105 ${
+        isWarning
+          ? "border-amber-300 bg-[#fffadd]"
+          : "border-[#3139fb]/20 bg-white"
+      }`}
+    >
+      {!imgError ? (
+        <img
+          src={faviconUrl}
+          alt={`${name} icon`}
+          className="size-5 object-contain"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="font-heading text-xs font-bold uppercase text-[#3139fb]">
+          {name.charAt(0)}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function DomainHealthWidget() {
   const [domains] = useState<DemoDomain[]>(initialDomains);
   const [filter, setFilter] = useState<"all" | "warning" | "healthy">("all");
@@ -130,25 +161,37 @@ export function DomainHealthWidget() {
           </div>
         </div>
 
-        {/* Tab switcher */}
-        <div className="flex items-center gap-1 rounded-[8px] border border-[#3139fb]/15 bg-white p-1">
-          {(["overview", "dns", "activity"] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`rounded-[6px] px-3 py-1 text-xs font-semibold uppercase tracking-wider transition-all duration-100 ease-out ${
-                activeTab === tab
-                  ? "bg-[#3139fb] text-white shadow-sm"
-                  : "text-[#3139fb]/70 hover:text-[#3139fb] hover:bg-[#fffcec]"
-              }`}
-            >
-              {tab === "overview"
-                ? "Overview"
-                : tab === "dns"
-                  ? "DNS & SSL"
-                  : "Activity"}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Direct Workspace Link */}
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#3139fb] px-3.5 py-1.5 font-body text-xs font-bold text-white shadow-sm transition-all hover:bg-[#3139fb]/90 active:scale-95"
+          >
+            <LayoutDashboard className="size-3.5" />
+            <span>DomDock Workspace</span>
+            <ArrowRight className="size-3.5" />
+          </Link>
+
+          {/* Tab switcher */}
+          <div className="flex items-center gap-1 rounded-[8px] border border-[#3139fb]/15 bg-white p-1">
+            {(["overview", "dns", "activity"] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-[6px] px-3 py-1 text-xs font-semibold uppercase tracking-wider transition-all duration-100 ease-out ${
+                  activeTab === tab
+                    ? "bg-[#3139fb] text-white shadow-sm"
+                    : "text-[#3139fb]/70 hover:text-[#3139fb] hover:bg-[#fffcec]"
+                }`}
+              >
+                {tab === "overview"
+                  ? "Overview"
+                  : tab === "dns"
+                    ? "DNS & SSL"
+                    : "Activity"}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -255,36 +298,35 @@ export function DomainHealthWidget() {
             return (
               <div
                 key={domain.id}
-                className="group flex flex-col gap-3 rounded-[10px] border border-[#3139fb]/15 bg-white p-3.5 transition-all duration-150 ease-out hover:border-[#3139fb] hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
+                className="group flex flex-col gap-3 rounded-[12px] border border-[#3139fb]/15 bg-white p-3.5 transition-all duration-150 ease-out hover:border-[#3139fb] hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
               >
-                {/* Domain & Registrar info */}
+                {/* Domain Favicon Avatar & Registrar info */}
                 <div className="flex items-center gap-3">
-                  <div
-                    className={`grid size-8 place-items-center rounded-[8px] ${
-                      isWarning
-                        ? "bg-[#fffadd] text-[#3139fb]"
-                        : "bg-[#3139fb]/10 text-[#3139fb]"
-                    }`}
-                  >
-                    <Globe className="size-4" />
-                  </div>
+                  <DomainAvatar name={domain.name} isWarning={isWarning} />
+
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-heading text-sm font-bold text-[#3139fb]">
+                      <Link
+                        href="/dashboard"
+                        className="font-heading text-sm font-bold text-[#3139fb] hover:underline"
+                      >
                         {domain.name}
-                      </span>
+                      </Link>
                       <a
                         href={`https://${domain.name}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[#3139fb]/40 hover:text-[#3139fb]"
+                        title={`Visit ${domain.name}`}
                       >
                         <ExternalLink className="size-3" />
                       </a>
                     </div>
                     <p className="font-mono text-[11px] text-[#3139fb]/60">
                       {domain.registrar} • Auto-renew:{" "}
-                      {domain.autoRenew ? "ON" : "OFF"}
+                      <span className={domain.autoRenew ? "text-emerald-600 font-bold" : "text-amber-600 font-bold"}>
+                        {domain.autoRenew ? "ON" : "OFF"}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -341,14 +383,17 @@ export function DomainHealthWidget() {
           {domains.map((domain) => (
             <div
               key={domain.id}
-              className="flex items-center justify-between rounded-[10px] border border-[#3139fb]/15 bg-white p-3.5"
+              className="flex items-center justify-between rounded-[12px] border border-[#3139fb]/15 bg-white p-3.5 transition-all hover:border-[#3139fb]"
             >
               <div className="flex items-center gap-3">
-                <Shield className="size-4 text-[#3139fb]" />
+                <DomainAvatar name={domain.name} />
                 <div>
-                  <span className="font-heading text-sm font-bold text-[#3139fb]">
+                  <Link
+                    href="/dashboard"
+                    className="font-heading text-sm font-bold text-[#3139fb] hover:underline"
+                  >
                     {domain.name}
-                  </span>
+                  </Link>
                   <p className="font-mono text-[11px] text-[#3139fb]/60">
                     DNS latency: {domain.dnsLatency}
                   </p>
@@ -369,7 +414,7 @@ export function DomainHealthWidget() {
       )}
 
       {activeTab === "activity" && (
-        <div className="space-y-3 rounded-[10px] border border-[#3139fb]/15 bg-white p-4">
+        <div className="space-y-3 rounded-[12px] border border-[#3139fb]/15 bg-white p-4">
           <div className="flex items-start gap-3 border-b border-[#3139fb]/10 pb-3">
             <Sparkles className="size-4 text-[#3139fb]" />
             <div>

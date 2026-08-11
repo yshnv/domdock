@@ -1,7 +1,17 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { ArcHeader } from "@/components/arc-header";
 import { LoginForm } from "@/components/login-form";
 
-export default function Page() {
+export default async function Page() {
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
   return (
     <div className="min-h-screen bg-background text-foreground">
       <ArcHeader />

@@ -248,8 +248,10 @@ export default function DashboardClient({
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
+    if (window.confirm("Are you sure you want to log out of DomDock?")) {
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    }
   };
 
   return (
@@ -258,7 +260,7 @@ export default function DashboardClient({
       <header className="sticky top-0 z-40 border-b border-border/30 bg-background/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-6">
           <Link
-            href="/"
+            href="/dashboard"
             className="flex items-center gap-2.5 font-heading text-base font-bold text-foreground"
           >
             <div className="grid size-7 place-items-center rounded-[8px] bg-[#3139fb] text-white shadow-sm">
@@ -462,7 +464,7 @@ export default function DashboardClient({
                       </button>
 
                       <Link
-                        href={`/app/domain/${domain.id}`}
+                        href={`/dashboard/domain/${domain.id}`}
                         className="inline-flex items-center gap-1 rounded-[8px] border border-[#3139fb]/20 bg-[#fffcec] px-3 py-1.5 font-body text-xs font-semibold text-[#3139fb] transition-all hover:bg-[#fffadd] hover:border-[#3139fb]"
                       >
                         <span>View Details & DNS</span>
