@@ -16,7 +16,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "DomDock — Experience calmer domain tracking",
   description:
-    "Experience a calmer, focused domain health & expiry monitoring workspace. Designed for creators who ship on the web."
+    "Experience a calmer, focused domain health & expiry monitoring workspace. Designed for creators who ship on the web.",
+  icons: {
+    icon: "/logo.svg"
+  }
 };
 
 const fontDisplay = Outfit({

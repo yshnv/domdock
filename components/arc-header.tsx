@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import { DomDockLogo } from "@/components/domdock-logo";
 // import { ThemeToggle } from "@/components/theme-toggle";
 
 const repositoryUrl = "https://github.com/yshnv/domdock";
@@ -16,7 +17,7 @@ export function ArcHeader() {
           className="group flex items-center gap-2.5 text-foreground transition-opacity hover:opacity-90"
         >
           <div className="grid size-7 place-items-center rounded-[8px] bg-primary text-primary-foreground shadow-[0_2px_8px_rgba(49,57,251,0.25)] transition-transform duration-100 ease-out group-hover:scale-95">
-            <div className="size-2 rounded-full bg-white" />
+            <DomDockLogo className="size-4 text-white" />
           </div>
           <div className="flex items-center gap-1.5">
             <span className="font-heading text-base font-bold tracking-tight">

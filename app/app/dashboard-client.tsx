@@ -12,6 +12,7 @@ import {
   Globe
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { DomDockLogo } from "@/components/domdock-logo";
 // import { ThemeToggle } from "@/components/theme-toggle";
 
 type DnsRecords = {
@@ -206,7 +207,7 @@ export default function DashboardClient({
             className="flex items-center gap-2.5 font-heading text-base font-bold text-foreground"
           >
             <div className="grid size-7 place-items-center rounded-[8px] bg-[#3139fb] text-white shadow-sm">
-              <div className="size-2 rounded-full bg-white" />
+              <DomDockLogo className="size-4 text-white" />
             </div>
             DomDock Workspace
           </Link>
