@@ -12,7 +12,7 @@ import {
   Globe
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { ThemeToggle } from "@/components/theme-toggle";
+// import { ThemeToggle } from "@/components/theme-toggle";
 
 type Domain = {
   id: string;
@@ -200,7 +200,7 @@ export default function DashboardClient({
             DomDock Workspace
           </Link>
           <div className="flex items-center gap-3 text-xs font-semibold text-[#3139fb]">
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
             <span className="hidden rounded-[6px] bg-[#fffcec] px-3 py-1 font-mono text-[11px] border border-[#3139fb]/20 sm:inline-block">
               {email}
             </span>
