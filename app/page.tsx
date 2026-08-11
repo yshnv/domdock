@@ -1,44 +1,124 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowRight, Check, Github } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { ArrowRight, Github, ShieldCheck, Sparkles } from "lucide-react";
+import { ArcCtaSection } from "@/components/arc-cta-section";
+import { ArcFeatureBento } from "@/components/arc-feature-bento";
+import { ArcHeader } from "@/components/arc-header";
+import { ArcLogoWall } from "@/components/arc-logo-wall";
+import { DomainHealthWidget } from "@/components/domain-health-widget";
 
 const repositoryUrl = "https://github.com/yshnv/domdock";
-const features = [
-  ["One clear view", "See every domain, registrar, expiry date, and health status in one calm workspace."],
-  ["Useful reminders", "Know what needs attention before a renewal becomes an emergency."],
-  ["Open by default", "A focused, privacy-friendly tool for people who ship on the web."],
-];
-
-function Brand() {
-  return <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight"><span className="grid size-7 place-items-center rounded-md bg-primary text-primary-foreground"><span className="size-2 rounded-full bg-primary-foreground" /></span>DomDock</Link>;
-}
 
 export default function Home() {
-  return <main className="min-h-screen bg-background">
-    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Brand />
-        <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex"><a href="#features" className="transition-colors hover:text-foreground">Features</a><Link href="/about" className="transition-colors hover:text-foreground">About</Link><a href={repositoryUrl} target="_blank" rel="noreferrer" className="transition-colors hover:text-foreground">GitHub</a><Link href="/auth/login" className="text-foreground hover:underline">Sign in</Link><ThemeToggle /></nav>
-        <div className="flex items-center gap-2 md:hidden"><ThemeToggle /><Button asChild size="sm"><Link href="/auth/sign-up">Get started</Link></Button></div>
-      </div>
-    </header>
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* 1. Arc Desktop Navigation Header */}
+      <ArcHeader />
 
-    <section className="mx-auto max-w-6xl px-4 pb-20 pt-24 sm:px-6 sm:pt-32">
-      <div className="max-w-3xl"><Badge variant="secondary" className="mb-6">Open source domain monitoring</Badge><h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-6xl">Keep your domains healthy and never miss an expiry.</h1><p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground">DomDock gives you one simple place to track domain health, expiry dates, and the next action that matters.</p><div className="mt-8 flex flex-col gap-3 sm:flex-row"><Button asChild size="lg"><Link href="/auth/sign-up">Start tracking for free <ArrowRight data-icon="inline-end" /></Link></Button><Button asChild variant="outline" size="lg"><a href="#features">See how it works</a></Button></div></div>
-      <div className="mt-20 grid gap-4 md:grid-cols-3"><Card className="md:col-span-2"><CardHeader><div className="flex items-center justify-between"><CardTitle>Domain overview</CardTitle><Badge>Live</Badge></div></CardHeader><CardContent><div className="grid gap-3 sm:grid-cols-3"><Metric label="Tracked" value="12" /><Metric label="Healthy" value="10" /><Metric label="Expiring soon" value="2" /></div><Separator className="my-6" /><div className="flex items-center justify-between border-b py-3 text-sm"><span className="font-medium">example.com</span><span className="text-muted-foreground">Renews in 42 days</span><Badge variant="outline">Healthy</Badge></div><div className="flex items-center justify-between py-3 text-sm"><span className="font-medium">studio.dev</span><span className="text-muted-foreground">Renews in 8 days</span><Badge variant="destructive">Review</Badge></div></CardContent></Card><Card><CardHeader><CardTitle>Stay ahead</CardTitle></CardHeader><CardContent><p className="text-sm leading-6 text-muted-foreground">A focused dashboard that tells you what needs attention without adding noise.</p><ul className="mt-6 flex flex-col gap-3 text-sm">{["Expiry visibility", "Health checks", "Daily refresh"].map((item) => <li key={item} className="flex items-center gap-2"><Check data-icon="inline-start" className="text-primary" />{item}</li>)}</ul></CardContent></Card></div>
-    </section>
+      <main className="mx-auto max-w-[1280px] px-4 sm:px-6">
+        {/* 2. Hero Section — Viewport Constrained & Calm */}
+        <section className="pb-12 pt-10 md:pb-16 md:pt-14">
+          <div className="mx-auto max-w-3xl text-center">
+            {/* Eyebrow — Section 1 eyebrow (hero) */}
+            <div className="mb-4 inline-flex items-center gap-1.5 rounded-[6px] bg-[#fffadd] px-3 py-1 font-mono text-[11px] font-bold text-[#3139fb] border border-[#3139fb]/20">
+              <Sparkles className="size-3 text-[#3139fb]" />
+              <span>CALM DOMAIN MONITORING</span>
+            </div>
 
-    <section id="features" className="border-y bg-muted/30"><div className="mx-auto max-w-6xl px-4 py-20 sm:px-6"><div className="max-w-xl"><p className="text-sm font-medium text-primary">Everything you need</p><h2 className="mt-2 text-3xl font-semibold tracking-tight">Simple by design.</h2><p className="mt-4 text-muted-foreground">No complicated registrar workflows. Just the useful information, available when you need it.</p></div><div className="mt-10 grid gap-4 md:grid-cols-3">{features.map(([title, description]) => <Card key={title}><CardHeader><CardTitle className="text-lg">{title}</CardTitle></CardHeader><CardContent><p className="text-sm leading-6 text-muted-foreground">{description}</p></CardContent></Card>)}</div></div></section>
+            {/* Display Headline — max 2 lines desktop */}
+            <h1 className="font-display text-4xl font-bold tracking-tight text-[#3139fb] sm:text-5xl md:text-6xl lg:text-7xl">
+              Experience calmer domain tracking.
+            </h1>
 
-    <section className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-20 sm:px-6 md:flex-row md:items-center md:justify-between"><div><h2 className="text-3xl font-semibold tracking-tight">Ready to keep watch?</h2><p className="mt-2 text-muted-foreground">Create your free DomDock workspace today.</p></div><Button asChild size="lg"><Link href="/auth/sign-up">Create free account <ArrowRight data-icon="inline-end" /></Link></Button></section>
-    <footer className="border-t"><div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6"><div className="flex items-center gap-4"><Brand /><span>Free and open source</span></div><a href={repositoryUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-foreground"><Github data-icon="inline-start" /> yshnv/domdock</a></div></footer>
-  </main>;
+            {/* Subtext — max 18 words */}
+            <p className="mx-auto mt-4 max-w-xl text-balance text-sm font-semibold leading-relaxed text-[#3139fb]/80 sm:text-base">
+              See every domain, registrar expiration date, and health status in
+              one clear, quiet workspace.
+            </p>
+
+            {/* Primary & Secondary CTAs */}
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/auth/sign-up"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-[8px] bg-[#3139fb] px-6 font-body text-xs font-semibold text-white shadow-[0_2px_8px_rgba(49,57,251,0.25)] transition-all duration-100 ease-out hover:bg-[#3139fb]/90 active:scale-[0.98]"
+              >
+                <ShieldCheck className="size-4" />
+                <span>Start Tracking Free</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
+              <a
+                href="#live-inspector"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-[8px] border border-[#3139fb]/25 bg-[#fffcec] px-5 font-body text-xs font-semibold text-[#3139fb] transition-all duration-100 ease-out hover:bg-[#fffadd] active:scale-[0.98]"
+              >
+                <span>Explore Live Demo</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Interactive Live Inspector Showcase */}
+          <div id="live-inspector" className="mt-10 md:mt-12">
+            <DomainHealthWidget />
+          </div>
+        </section>
+
+        {/* 3. Logo Wall — Trusted by Modern Web Creators */}
+        <section className="border-t border-[#3139fb]/15 py-8">
+          <ArcLogoWall />
+        </section>
+
+        {/* 4. Asymmetric Bento Grid Section */}
+        <section id="features" className="py-12 md:py-16">
+          <div className="mb-8 max-w-xl">
+            <h2 className="font-heading text-3xl font-bold text-[#3139fb] sm:text-4xl">
+              Thoughtful features for people who ship on the web.
+            </h2>
+            <p className="mt-2 text-xs text-[#3139fb]/70">
+              Designed around clarity and speed, with no clutter or complicated
+              workflows.
+            </p>
+          </div>
+
+          <ArcFeatureBento />
+        </section>
+
+        {/* 5. Poster Call To Action Section */}
+        <section className="py-12 md:py-16">
+          <ArcCtaSection />
+        </section>
+      </main>
+
+      {/* 6. Single-line Crisp Footer */}
+      <footer className="border-t border-[#3139fb]/15 bg-[#fffcec] py-6">
+        <div className="mx-auto flex max-w-[1280px] flex-col gap-4 px-4 sm:px-6 sm:flex-row sm:items-center sm:justify-between text-xs text-[#3139fb]">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 font-heading font-bold">
+              <span className="grid size-5 place-items-center rounded-[4px] bg-[#3139fb] text-[10px] text-white">
+                D
+              </span>
+              DomDock
+            </div>
+            <span className="text-[#3139fb]/40">•</span>
+            <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#3139fb]/80">
+              <span className="size-2 rounded-full bg-emerald-500" /> System
+              Operational
+            </span>
+          </div>
+
+          <div className="flex items-center gap-6 font-semibold text-[#3139fb]/80">
+            <Link href="/about" className="hover:text-[#3139fb]">
+              About
+            </Link>
+            <a
+              href={repositoryUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 hover:text-[#3139fb]"
+            >
+              <Github className="size-3.5" />
+              <span>yshnv/domdock</span>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
 }
-
-function Metric({ label, value }: { label: string; value: string }) { return <div className="rounded-lg border bg-muted/30 p-4"><p className="text-2xl font-semibold tracking-tight">{value}</p><p className="mt-1 text-xs text-muted-foreground">{label}</p></div>; }

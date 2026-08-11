@@ -2,11 +2,17 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, LogOut, Plus, RefreshCw, X, Trash2, Globe } from "lucide-react";
+import {
+  ArrowUpRight,
+  LogOut,
+  Plus,
+  RefreshCw,
+  X,
+  Trash2,
+  Globe
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type Domain = {
   id: string;
@@ -50,7 +56,9 @@ export default function DashboardClient({
         const updatedDomains = await Promise.all(
           data.map(async (domain: Domain) => {
             try {
-              const res = await fetch(`/api/check-domain?domain=${encodeURIComponent(domain.name)}`);
+              const res = await fetch(
+                `/api/check-domain?domain=${encodeURIComponent(domain.name)}`
+              );
               if (res.ok) {
                 const info = await res.json();
                 const newHealth = info.health || domain.health;
@@ -126,7 +134,9 @@ export default function DashboardClient({
     let fetchedHealth: "healthy" | "warning" | "offline" = "healthy";
 
     try {
-      const res = await fetch(`/api/check-domain?domain=${encodeURIComponent(cleanName)}`);
+      const res = await fetch(
+        `/api/check-domain?domain=${encodeURIComponent(cleanName)}`
+      );
       if (res.ok) {
         const info = await res.json();
         if (info.expiresAt) fetchedExpiry = info.expiresAt;
@@ -177,191 +187,212 @@ export default function DashboardClient({
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-5 py-5 md:px-10">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b border-border/30 bg-background/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-6">
           <Link
             href="/"
-            className="flex items-center gap-3 text-sm font-black uppercase tracking-tight"
+            className="flex items-center gap-2.5 font-heading text-base font-bold text-foreground"
           >
-            <span className="grid size-7 place-items-center bg-foreground">
-              <span className="size-2.5 bg-primary" />
-            </span>
-            DomDock
+            <div className="grid size-7 place-items-center rounded-[8px] bg-[#3139fb] text-white shadow-sm">
+              <div className="size-2 rounded-full bg-white" />
+            </div>
+            DomDock Workspace
           </Link>
-          <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-[.14em] text-muted-foreground">
+          <div className="flex items-center gap-3 text-xs font-semibold text-[#3139fb]">
             <ThemeToggle />
-            <span className="hidden sm:inline">{email}</span>
-            <Button variant="ghost" size="sm" onClick={logout}>
-              <LogOut data-icon="inline-start" /> Logout
-            </Button>
+            <span className="hidden rounded-[6px] bg-[#fffcec] px-3 py-1 font-mono text-[11px] border border-[#3139fb]/20 sm:inline-block">
+              {email}
+            </span>
+            <button
+              onClick={logout}
+              className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#3139fb]/20 bg-white px-3 py-1.5 text-xs font-semibold text-[#3139fb] hover:bg-[#fffadd] transition-colors"
+            >
+              <LogOut className="size-3.5" /> Logout
+            </button>
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-[1600px] px-5 py-12 md:px-10 md:py-16">
-        <div className="mb-12 flex flex-col justify-between gap-8 border-b border-border pb-10 md:flex-row md:items-end">
+
+      <div className="mx-auto max-w-[1280px] px-4 py-8 sm:px-6 md:py-12">
+        {/* Page Banner */}
+        <div className="mb-8 flex flex-col justify-between gap-6 border-b border-[#3139fb]/15 pb-8 sm:flex-row sm:items-end">
           <div>
-            <p className="section-label mb-5">Control room / daily watch</p>
-            <h1 className="text-5xl font-black uppercase leading-[.85] tracking-[-.07em] md:text-8xl">
-              Your domains.
+            <span className="rounded-[4px] bg-[#fffadd] px-2.5 py-0.5 font-mono text-[11px] font-bold text-[#3139fb] border border-[#3139fb]/20">
+              DAILY WATCH
+            </span>
+            <h1 className="mt-2 font-display text-4xl font-bold tracking-tight text-[#3139fb] sm:text-5xl">
+              Monitored Domains
             </h1>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" disabled={refreshing} onClick={() => refresh()}>
-              <RefreshCw className={`mr-2 size-4 ${refreshing ? "animate-spin" : ""}`} />{" "}
-              {refreshing ? "Checking..." : "Refresh"}
-            </Button>
-            <Button onClick={() => setShowAdd(true)}>
-              <Plus data-icon="inline-start" /> Add domain
-            </Button>
+          <div className="flex gap-2.5">
+            <button
+              disabled={refreshing}
+              onClick={() => refresh()}
+              className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-[#3139fb]/20 bg-[#fffcec] px-4 text-xs font-semibold text-[#3139fb] hover:bg-[#fffadd] transition-all active:scale-95 disabled:opacity-50"
+            >
+              <RefreshCw
+                className={`size-3.5 ${refreshing ? "animate-spin" : ""}`}
+              />
+              {refreshing ? "Refreshing..." : "Refresh Status"}
+            </button>
+            <button
+              onClick={() => setShowAdd(true)}
+              className="inline-flex h-10 items-center gap-2 rounded-[8px] bg-[#3139fb] px-4 text-xs font-semibold text-white shadow-md hover:bg-[#3139fb]/90 transition-all active:scale-95"
+            >
+              <Plus className="size-4" /> Add Domain
+            </button>
           </div>
         </div>
-        <div className="mb-14 grid gap-4 sm:grid-cols-3">
+
+        {/* Stats Grid */}
+        <div className="mb-10 grid gap-4 sm:grid-cols-3">
           <Stat
-            label="Domains tracked"
+            label="Total Monitored"
             value={stats.total}
-            detail="Across your stack"
+            detail="Active domain records"
           />
           <Stat
-            label="Healthy / Online"
+            label="Healthy / Response 200"
             value={stats.healthy}
-            detail="Active status checks"
+            detail="Live website status"
           />
           <Stat
-            label="Expiring soon"
+            label="Expiring Soon"
             value={stats.soon}
-            detail="Within 30 days"
+            detail="Needs renewal within 30d"
             alert={stats.soon > 0}
           />
         </div>
-        <section>
-          <div className="mb-5 flex items-center justify-between">
+
+        {/* Domains List */}
+        <section className="rounded-[22px] border border-[#3139fb]/20 bg-[#fffcec] p-6 arc-shadow-elevated">
+          <div className="mb-6 flex items-center justify-between border-b border-[#3139fb]/15 pb-4">
             <div>
-              <p className="section-label">Domain list</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Website status and registry expiry checked automatically.
+              <h2 className="font-heading text-lg font-bold text-[#3139fb]">
+                Tracked Domains ({domains.length})
+              </h2>
+              <p className="text-xs text-[#3139fb]/70">
+                Automated WHOIS RDAP expiry and HTTP status checks
               </p>
             </div>
-            <span className="font-mono text-xs text-muted-foreground">
-              {domains.length} records
+            <span className="font-mono text-xs font-bold text-[#3139fb]/60">
+              Live Sync
             </span>
           </div>
+
           {domains.length === 0 ? (
-            <div className="border border-dashed border-border px-6 py-20 text-center">
-              <p className="font-bold uppercase">No domains tracked yet.</p>
+            <div className="rounded-[12px] border border-dashed border-[#3139fb]/30 bg-white p-12 text-center">
+              <p className="font-heading text-base font-bold text-[#3139fb]">
+                No domains in workspace yet.
+              </p>
               <button
                 onClick={() => setShowAdd(true)}
-                className="mt-5 text-sm font-semibold text-primary underline"
+                className="mt-3 text-xs font-semibold text-[#3139fb] underline hover:opacity-80"
               >
-                Add your first domain
+                Add your first domain to monitor
               </button>
             </div>
           ) : (
-            <div className="border-t border-border">
+            <div className="space-y-3">
               {domains.map((domain) => {
                 const days = daysUntil(domain.expires_at);
                 const soon = days !== null && days <= 30;
                 return (
                   <article
                     key={domain.id}
-                    className="grid gap-5 border-b border-border py-6 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-center"
+                    className="flex flex-col gap-4 rounded-[12px] border border-[#3139fb]/15 bg-white p-4 transition-all hover:border-[#3139fb] sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h2 className="text-xl font-bold tracking-tight">
-                          {domain.name}
-                        </h2>
-                        <a
-                          href={`https://${domain.name}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-muted-foreground hover:text-foreground"
-                          title="Open website"
-                        >
-                          <Globe className="size-4" />
-                        </a>
+                    <div className="flex items-center gap-3">
+                      <div className="grid size-9 place-items-center rounded-[8px] bg-[#3139fb]/10 text-[#3139fb]">
+                        <Globe className="size-4.5" />
                       </div>
-                      <p className="mt-1 font-mono text-xs text-muted-foreground">
-                        Last checked{" "}
-                        {domain.last_checked_at
-                          ? new Date(domain.last_checked_at).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit"
-                            }) + " on " + new Date(domain.last_checked_at).toLocaleDateString()
-                          : "pending"}
-                      </p>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-heading text-base font-bold text-[#3139fb]">
+                            {domain.name}
+                          </h3>
+                          <a
+                            href={`https://${domain.name}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[#3139fb]/40 hover:text-[#3139fb]"
+                            title="Open website"
+                          >
+                            <Globe className="size-3.5" />
+                          </a>
+                        </div>
+                        <p className="font-mono text-[11px] text-[#3139fb]/60">
+                          Last checked:{" "}
+                          {domain.last_checked_at
+                            ? new Date(
+                                domain.last_checked_at
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit"
+                              })
+                            : "Pending"}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="section-label">Website status</p>
-                      <p className="mt-2 flex items-center gap-2 text-sm font-bold uppercase">
-                        <span
-                          className={`size-2.5 rounded-full ${
-                            domain.health === "healthy"
-                              ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                              : domain.health === "warning"
-                              ? "bg-amber-500"
-                              : "bg-destructive"
-                          }`}
-                        />{" "}
-                        <span
-                          className={
-                            domain.health === "healthy"
-                              ? "text-emerald-500 font-bold"
-                              : "text-foreground font-bold"
-                          }
-                        >
-                          {domain.health === "healthy"
-                            ? "Online"
-                            : domain.health === "offline"
-                            ? "Offline"
-                            : domain.health}
+
+                    <div className="flex flex-wrap items-center gap-6 sm:justify-end">
+                      <div>
+                        <span className="font-mono text-[10px] font-bold text-[#3139fb]/60">
+                          STATUS
                         </span>
-                      </p>
-                    </div>
-                    <div>
-                      <p className="section-label">Registry Expiry</p>
-                      <p
-                        className={
-                          soon
-                            ? "mt-2 font-bold text-primary"
-                            : "mt-2 font-semibold"
-                        }
-                      >
-                        {domain.expires_at
-                          ? new Date(
-                              `${domain.expires_at}T00:00:00`
-                            ).toLocaleDateString(undefined, {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric"
-                            })
-                          : "Auto-fetching..."}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="font-mono text-xs uppercase text-muted-foreground">
-                        {days !== null ? (
-                          days < 0 ? (
-                            <span className="font-bold text-destructive">
-                              {Math.abs(days)}d overdue
-                            </span>
-                          ) : (
-                            <span className={soon ? "font-bold text-amber-500" : ""}>
-                              {days}d left
-                            </span>
-                          )
-                        ) : (
-                          "Pending"
-                        )}
+                        <p className="flex items-center gap-1.5 text-xs font-bold text-[#3139fb]">
+                          <span
+                            className={`size-2.5 rounded-full ${
+                              domain.health === "healthy"
+                                ? "bg-emerald-500"
+                                : domain.health === "warning"
+                                  ? "bg-amber-500"
+                                  : "bg-red-500"
+                            }`}
+                          />
+                          {domain.health === "healthy"
+                            ? "Online (200 OK)"
+                            : domain.health}
+                        </p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
+
+                      <div>
+                        <span className="font-mono text-[10px] font-bold text-[#3139fb]/60">
+                          EXPIRY DATE
+                        </span>
+                        <p className="font-mono text-xs font-bold text-[#3139fb]">
+                          {domain.expires_at
+                            ? new Date(
+                                `${domain.expires_at}T00:00:00`
+                              ).toLocaleDateString(undefined, {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric"
+                              })
+                            : "Auto-fetching..."}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <span
+                          className={`inline-flex items-center rounded-[6px] px-2.5 py-1 font-mono text-[11px] font-bold ${
+                            soon
+                              ? "bg-[#fffadd] text-[#3139fb] border border-[#3139fb]/20"
+                              : "bg-[#3139fb] text-white"
+                          }`}
+                        >
+                          {days !== null ? `${days}d left` : "Pending"}
+                        </span>
+                      </div>
+
+                      <button
                         onClick={() => deleteDomain(domain.id)}
+                        className="rounded-[6px] p-2 text-[#3139fb]/40 hover:bg-red-50 hover:text-red-600 transition-colors"
                         title="Delete domain"
-                        className="text-muted-foreground hover:text-destructive"
                       >
                         <Trash2 className="size-4" />
-                      </Button>
+                      </button>
                     </div>
                   </article>
                 );
@@ -370,47 +401,53 @@ export default function DashboardClient({
           )}
         </section>
       </div>
+
+      {/* Add Domain Modal */}
       {showAdd && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-foreground/40 p-5">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-[#3139fb]/30 backdrop-blur-sm p-4">
           <form
             onSubmit={addDomain}
-            className="w-full max-w-lg border border-border bg-background p-7"
+            className="w-full max-w-md rounded-[22px] border border-[#3139fb]/25 bg-white p-7 arc-shadow-elevated"
           >
-            <div className="mb-8 flex items-start justify-between">
+            <div className="mb-6 flex items-start justify-between">
               <div>
-                <p className="section-label">New record</p>
-                <h2 className="mt-3 text-3xl font-black uppercase tracking-tight">
-                  Add domain
+                <span className="rounded-[4px] bg-[#fffadd] px-2 py-0.5 font-mono text-[10px] font-bold text-[#3139fb] border border-[#3139fb]/20">
+                  NEW RECORD
+                </span>
+                <h2 className="mt-2 font-heading text-2xl font-bold text-[#3139fb]">
+                  Add Domain to Watch
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAdd(false)}
-                aria-label="Close"
+                className="rounded-[6px] p-1 text-[#3139fb]/60 hover:text-[#3139fb]"
               >
-                <X />
+                <X className="size-5" />
               </button>
             </div>
-            <div className="grid gap-5">
-              <label className="grid gap-2 text-xs font-bold uppercase tracking-wider">
-                Domain name
+
+            <div className="space-y-4">
+              <label className="block text-xs font-bold text-[#3139fb]">
+                Domain Name
                 <input
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="example.com"
-                  className="border border-border bg-transparent px-4 py-3 text-base font-normal normal-case outline-none focus:border-primary"
+                  className="mt-1.5 w-full rounded-[8px] border border-[#3139fb]/20 bg-[#fffcec] px-3.5 py-2.5 text-sm font-medium text-[#3139fb] placeholder-[#3139fb]/40 outline-none focus:border-[#3139fb] focus:ring-1 focus:ring-[#3139fb]"
                 />
               </label>
-              <p className="text-xs text-muted-foreground">
-                Domain expiry date and website health status will be fetched automatically.
+              <p className="text-xs text-[#3139fb]/70">
+                WHOIS expiration and HTTP health will be fetched automatically.
               </p>
             </div>
+
             <button
               disabled={busy}
-              className="poster-button mt-8 w-full justify-center bg-primary text-primary-foreground disabled:opacity-50"
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#3139fb] py-3 text-xs font-bold text-white shadow-md hover:bg-[#3139fb]/90 transition-all disabled:opacity-50"
             >
-              {busy ? "Checking & Saving..." : "Save domain"}{" "}
+              {busy ? "Checking & Saving..." : "Save Domain"}
               <ArrowUpRight className="size-4" />
             </button>
           </form>
@@ -432,18 +469,20 @@ function Stat({
   alert?: boolean;
 }) {
   return (
-    <Card className="rounded-lg">
-      <CardHeader>
-        <CardTitle className="section-label">{label}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p
-          className={`text-5xl font-black tracking-[-.08em] ${alert ? "text-primary" : ""}`}
-        >
-          {value}
-        </p>
-        <p className="mt-3 text-sm text-muted-foreground">{detail}</p>
-      </CardContent>
-    </Card>
+    <div
+      className={`rounded-[16px] border p-5 arc-shadow-card transition-all ${
+        alert
+          ? "border-[#3139fb] bg-[#fffadd]"
+          : "border-[#3139fb]/15 bg-[#fffcec]"
+      }`}
+    >
+      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#3139fb]/70">
+        {label}
+      </span>
+      <p className="mt-1 font-display text-3xl font-bold text-[#3139fb]">
+        {value}
+      </p>
+      <p className="mt-1 text-xs text-[#3139fb]/70">{detail}</p>
+    </div>
   );
 }
