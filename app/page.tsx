@@ -84,13 +84,60 @@ export default function Home() {
             <ArcFeatureBento />
           </section>
 
-          {/* 5. Poster Call To Action Section */}
-          <section className="py-12 md:py-16">
+          {/* 5. Manifesto & About Section */}
+          <section id="about" className="py-12 md:py-16">
+            <div className="overflow-hidden rounded-[22px] border border-[#3139fb]/20 bg-[#fffcec] p-8 arc-shadow-elevated md:p-12">
+              <div className="max-w-3xl">
+                <span className="rounded-[4px] bg-[#fffadd] px-2.5 py-1 font-mono text-[11px] font-bold text-[#3139fb] border border-[#3139fb]/20">
+                  MANIFESTO & ABOUT
+                </span>
+
+                <h2 className="mt-4 font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#3139fb]">
+                  Visibility for the web assets you ship.
+                </h2>
+
+                <div className="mt-6 space-y-4 text-xs sm:text-sm font-semibold leading-relaxed text-[#3139fb]/80">
+                  <p>
+                    DomDock is a focused, open-source tool built for developers, creators, and modern product teams who need clarity on their domain portfolio.
+                  </p>
+                  <p>
+                    We believe core developer utility tools should be calm, distraction-free, and straightforward: add a domain name, monitor health status, and know exactly when renewal actions are needed.
+                  </p>
+                  <p>
+                    No dark patterns, no registrar up-selling, and no noise. Just authoritative registry queries and instant notifications.
+                  </p>
+                </div>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Link
+                    href="/auth/sign-up"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#3139fb] px-5 font-body text-xs font-semibold text-white shadow-md transition-all hover:bg-[#3139fb]/90 active:scale-95"
+                  >
+                    <ShieldCheck className="size-4" />
+                    <span>Start Tracking Free</span>
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                  <a
+                    href={repositoryUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-[8px] border border-[#3139fb]/25 bg-white px-4 font-body text-xs font-semibold text-[#3139fb] transition-all hover:bg-[#fffadd] active:scale-95"
+                  >
+                    <Github className="size-4" />
+                    <span>View Source Code</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 6. Poster Call To Action Section */}
+          <section className="pb-12 md:pb-16">
             <ArcCtaSection />
           </section>
         </main>
 
-        {/* 6. Single-line Crisp Footer */}
+        {/* 7. Single-line Crisp Footer */}
         <footer className="border-t border-[#3139fb]/15 bg-[#fffcec] py-6">
           <div className="mx-auto flex max-w-[1280px] flex-col gap-4 px-4 sm:px-6 sm:flex-row sm:items-center sm:justify-between text-xs text-[#3139fb]">
             <div className="flex items-center gap-3">
@@ -111,9 +158,9 @@ export default function Home() {
             </div>
 
             <div className="flex items-center gap-6 font-semibold text-[#3139fb]/80">
-              <Link href="/about" className="hover:text-[#3139fb]">
+              <a href="#about" className="hover:text-[#3139fb]">
                 About
-              </Link>
+              </a>
               <a
                 href={repositoryUrl}
                 target="_blank"

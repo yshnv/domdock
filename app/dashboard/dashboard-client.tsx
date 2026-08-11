@@ -106,7 +106,9 @@ export default function DashboardClient({
     }, 600);
 
     try {
-      const res = await fetch(`/api/domains/${domainId}/check`, { method: "POST" });
+      const res = await fetch(`/api/domains/${domainId}/check`, {
+        method: "POST"
+      });
       clearInterval(interval);
 
       if (!res.ok) {
@@ -284,7 +286,7 @@ export default function DashboardClient({
       <header className="sticky top-0 z-40 border-b border-border/30 bg-background/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-6">
           <Link
-            href="/dashboard"
+            href="/"
             className="flex items-center gap-2.5 font-heading text-base font-bold text-foreground"
           >
             <div className="grid size-7 place-items-center rounded-[8px] bg-[#3139fb] text-white shadow-sm">

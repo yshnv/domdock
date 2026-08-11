@@ -6,7 +6,7 @@
 
 - [Domain Portfolio Overview](https://domdock.vercel.app/dashboard): Real-time expiration tracking, RDAP registry lookup, and status code checks.
 - [DNS & SSL Inspection](https://domdock.vercel.app/dashboard): Automated SSL validity countdowns, issuer details, and DNS record lookup.
-- [About & Manifesto](https://domdock.vercel.app/about): Learn why DomDock was created to provide a quiet, focused developer utility tool.
+- [About & Manifesto](https://domdock.vercel.app/#about): Learn why DomDock was created to provide a quiet, focused developer utility tool.
 - [Source Code on GitHub](https://github.com/yshnv/domdock): Open-source repository with Next.js 16, Supabase Auth, and Tailwind CSS.
 
 ## Documentation & Resources

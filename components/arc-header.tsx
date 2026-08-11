@@ -71,12 +71,12 @@ export function ArcHeader() {
             >
               Dashboard
             </Link>
-            <Link
-              href="/about"
+            <a
+              href="#about"
               className="transition-colors duration-100 ease-out hover:text-foreground"
             >
               About
-            </Link>
+            </a>
             <button
               onClick={() => setIsFeatureModalOpen(true)}
               className="inline-flex items-center gap-1 text-primary hover:underline transition-all"

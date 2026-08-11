@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import dns from "node:dns/promises";
+import { checkWebsiteAvailability } from "@/lib/monitoring/websiteMonitor";
 
 export type DnsRecords = {
   a: string[];
@@ -35,20 +36,25 @@ export async function GET(request: Request) {
     );
   }
 
-  // Run RDAP expiration lookup, Website status check, and DNS resolution in parallel
+  // Run RDAP expiration lookup, Website availability check with redirect handling, and DNS resolution in parallel
   const [expiryResult, siteResult, dnsResult] = await Promise.all([
     fetchRdapExpiry(cleanDomain),
-    checkWebsiteStatus(cleanDomain),
+    checkWebsiteAvailability(cleanDomain),
     fetchDnsRecords(cleanDomain)
   ]);
+
+  const statusCode = siteResult.statusCode || 200;
+  const isHealthy = siteResult.status === "healthy" || (statusCode >= 200 && statusCode < 400);
 
   return NextResponse.json({
     domain: cleanDomain,
     expiresAt: expiryResult,
-    health: siteResult.health,
-    statusCode: siteResult.statusCode,
-    statusText: siteResult.statusText,
+    health: isHealthy ? "healthy" : siteResult.status === "offline" ? "offline" : "warning",
+    statusCode: statusCode,
+    statusText: statusCode >= 300 && statusCode < 400 ? `${statusCode} Redirect (OK)` : `${statusCode} OK`,
     responseTimeMs: siteResult.responseTimeMs,
+    redirectCount: siteResult.redirectCount,
+    finalUrl: siteResult.finalUrl,
     dnsRecords: dnsResult,
     checkedAt: new Date().toISOString()
   });
@@ -92,7 +98,7 @@ async function fetchRdapExpiry(domain: string): Promise<string | null> {
 
     const data = await res.json();
     const events: Array<{ eventAction?: string; eventDate?: string }> = data?.events || [];
-    
+
     // Find expiration event
     const expEvent = events.find(
       (e) =>
@@ -102,70 +108,10 @@ async function fetchRdapExpiry(domain: string): Promise<string | null> {
     );
 
     if (expEvent?.eventDate) {
-      // Return ISO date portion (YYYY-MM-DD)
       return expEvent.eventDate.split("T")[0];
     }
   } catch {
-    // Fail gracefully if RDAP server is slow or domain extension isn't supported by RDAP
+    // Fail gracefully if RDAP server is slow or domain extension isn't supported
   }
   return null;
-}
-
-async function checkWebsiteStatus(domain: string): Promise<{
-  health: "healthy" | "warning" | "offline";
-  statusCode: number;
-  statusText: string;
-  responseTimeMs: number | null;
-}> {
-  const start = Date.now();
-
-  // Try HTTPS first
-  try {
-    const res = await fetch(`https://${domain}`, {
-      method: "GET",
-      signal: AbortSignal.timeout(6000),
-      headers: {
-        "User-Agent": "DomDock-Status-Checker/1.0"
-      }
-    });
-
-    const duration = Date.now() - start;
-    const isOk = res.ok || (res.status >= 200 && res.status < 400);
-
-    return {
-      health: isOk ? "healthy" : "warning",
-      statusCode: res.status,
-      statusText: `${res.status} ${res.statusText || (isOk ? "OK" : "Error")}`,
-      responseTimeMs: duration
-    };
-  } catch {
-    // Try HTTP fallback if HTTPS fails
-    try {
-      const httpStart = Date.now();
-      const resHttp = await fetch(`http://${domain}`, {
-        method: "GET",
-        signal: AbortSignal.timeout(6000),
-        headers: {
-          "User-Agent": "DomDock-Status-Checker/1.0"
-        }
-      });
-
-      const duration = Date.now() - httpStart;
-      const isOk = resHttp.ok || (resHttp.status >= 200 && resHttp.status < 400);
-
-      return {
-        health: isOk ? "healthy" : "warning",
-        statusCode: resHttp.status,
-        statusText: `${resHttp.status} ${resHttp.statusText || (isOk ? "OK" : "Error")}`,
-        responseTimeMs: duration
-      };
-    } catch {
-      return {
-        health: "offline",
-        statusCode: 0,
-        statusText: "Offline / Unreachable",
-        responseTimeMs: null
-      };
-    }
-  }
 }
