@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Github, Menu, X } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const repositoryUrl = "https://github.com/yshnv/domdock";
 const signInUrl = "/auth/login";
@@ -18,10 +19,10 @@ function Header() {
     <div className="mx-auto grid h-20 max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 md:grid-cols-12 md:px-8">
       <Link href="/" className="flex items-center gap-3 font-bold uppercase tracking-[-0.04em] md:col-span-3"><Mark /> DomDock</Link>
       <div className="hidden text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground md:col-span-6 md:block">Domain expiry intelligence / 2026</div>
-      <nav className="hidden items-center justify-end gap-7 text-sm font-semibold md:col-span-3 md:flex" aria-label="Main navigation"><a href="#system" className="hover:text-primary">System</a><a href={repositoryUrl} target="_blank" rel="noreferrer" className="hover:text-primary">GitHub</a><Link href="/about" className="hover:text-primary">About</Link><Link href={signInUrl} className="hover:text-primary">Sign in</Link></nav>
+      <nav className="hidden items-center justify-end gap-5 text-sm font-semibold md:col-span-3 md:flex" aria-label="Main navigation"><a href="#system" className="hover:text-primary">System</a><a href={repositoryUrl} target="_blank" rel="noreferrer" className="hover:text-primary">GitHub</a><Link href="/about" className="hover:text-primary">About</Link><Link href={signInUrl} className="hover:text-primary">Sign in</Link><ThemeToggle /></nav>
       <button className="md:hidden" onClick={() => setOpen(!open)} aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open}>{open ? <X /> : <Menu />}</button>
     </div>
-    {open && <nav className="flex flex-col gap-5 border-t border-border px-5 py-6 text-sm font-semibold md:hidden" aria-label="Mobile navigation"><a href="#system" onClick={() => setOpen(false)}>System</a><a href={repositoryUrl} target="_blank" rel="noreferrer">GitHub</a><Link href={signInUrl}>Sign in</Link><Link href={signUpUrl} className="bg-primary px-4 py-3 text-center text-primary-foreground">Start tracking</Link></nav>}
+    {open && <nav className="flex flex-col gap-5 border-t border-border px-5 py-6 text-sm font-semibold md:hidden" aria-label="Mobile navigation"><a href="#system" onClick={() => setOpen(false)}>System</a><a href={repositoryUrl} target="_blank" rel="noreferrer">GitHub</a><Link href={signInUrl}>Sign in</Link><Link href={signUpUrl} className="bg-primary px-4 py-3 text-center text-primary-foreground">Start tracking</Link><ThemeToggle /></nav>}
   </header>;
 }
 
