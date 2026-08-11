@@ -4,60 +4,127 @@
 
 @layer base {
   :root {
-    --background: 40 33% 97%;
-    --foreground: 222 18% 15%;
-    --card: 40 33% 99%;
-    --card-foreground: 222 18% 15%;
-    --popover: 40 33% 99%;
-    --popover-foreground: 222 18% 15%;
-    --primary: 222 18% 15%;
-    --primary-foreground: 40 33% 97%;
-    --secondary: 40 18% 92%;
-    --secondary-foreground: 222 18% 15%;
-    --muted: 40 18% 92%;
-    --muted-foreground: 220 8% 46%;
-    --accent: 40 18% 92%;
-    --accent-foreground: 222 18% 15%;
-    --destructive: 0 55% 48%;
+    --background: 0 0% 100%;       /* #ffffff */
+    --foreground: 237 96% 58%;      /* #3139fb */
+    
+    --card: 48 100% 96%;           /* #fffcec warm cream surface */
+    --card-foreground: 237 96% 58%; /* #3139fb */
+    
+    --popover: 48 100% 96%;        /* #fffcec */
+    --popover-foreground: 237 96% 58%;
+    
+    --primary: 237 96% 58%;        /* #3139fb Arc primary blue */
+    --primary-foreground: 0 0% 100%;/* #ffffff pure white */
+    
+    --secondary: 48 100% 96%;      /* #fffcec surface */
+    --secondary-foreground: 237 96% 58%;
+    
+    --muted: 48 100% 93%;          /* #fffadd pale yellow accent */
+    --muted-foreground: 237 70% 50%;/* Accessible #3139fb contrast */
+    
+    --accent: 48 100% 93%;         /* #fffadd pale yellow */
+    --accent-foreground: 237 96% 58%;
+    
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 222 10% 78%;
-    --input: 222 10% 78%;
-    --ring: 222 18% 15%;
-    --radius: 0.5rem;
+    
+    --border: 237 96% 58%;         /* #3139fb border matching primary */
+    --border-subtle: rgba(49, 57, 251, 0.2);
+    --input: rgba(49, 57, 251, 0.2);
+    --ring: 237 96% 58%;
+    --radius: 0.625rem;            /* 10px lg */
   }
+
   .dark {
-    --background: 222 18% 10%;
-    --foreground: 40 25% 94%;
-    --card: 222 18% 13%;
-    --card-foreground: 40 25% 94%;
-    --popover: 222 18% 13%;
-    --popover-foreground: 40 25% 94%;
-    --primary: 40 25% 94%;
-    --primary-foreground: 222 18% 10%;
-    --secondary: 222 14% 19%;
-    --secondary-foreground: 40 25% 94%;
-    --muted: 222 14% 19%;
-    --muted-foreground: 220 8% 68%;
-    --accent: 222 14% 19%;
-    --accent-foreground: 40 25% 94%;
-    --destructive: 0 55% 58%;
-    --destructive-foreground: 222 18% 10%;
-    --border: 222 12% 28%;
-    --input: 222 12% 28%;
-    --ring: 40 25% 94%;
+    --background: 237 40% 10%;
+    --foreground: 48 100% 96%;
+    --card: 237 35% 14%;
+    --card-foreground: 48 100% 96%;
+    --popover: 237 35% 14%;
+    --popover-foreground: 48 100% 96%;
+    --primary: 237 96% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 237 30% 18%;
+    --secondary-foreground: 48 100% 96%;
+    --muted: 237 30% 20%;
+    --muted-foreground: 237 70% 80%;
+    --accent: 48 100% 93%;
+    --accent-foreground: 237 96% 58%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: rgba(255, 252, 236, 0.25);
+    --border-subtle: rgba(255, 252, 236, 0.15);
+    --input: rgba(255, 252, 236, 0.25);
+    --ring: 237 96% 65%;
   }
-  * { @apply border-border; }
-  html { background: hsl(var(--background)); scroll-behavior: smooth; }
-  body { @apply bg-background text-foreground; }
+
+  * {
+    border-color: var(--border-subtle);
+  }
+
+  html {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    scroll-behavior: smooth;
+    font-family: var(--font-body), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    line-height: 1.5;
+  }
 }
 
-@layer components {
-  .poster-grid { @apply mx-auto grid max-w-[1600px] grid-cols-12; }
-  .poster-aside { @apply col-span-12 flex min-h-16 flex-col border-r-0 border-border px-5 py-6 md:col-span-3 md:min-h-[inherit] md:border-r md:px-8 md:py-10 lg:px-12; }
-  .section-label { @apply font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground; }
-  .poster-button { @apply inline-flex items-center gap-3 px-6 py-4 text-xs font-bold uppercase tracking-[0.14em] transition-colors; }
+
+/* Custom Arc Utility Classes */
+.font-display {
+  font-family: var(--font-display), "Marlin Soft SQ", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -1.6px;
+  line-height: 0.98;
+  font-weight: 700;
 }
 
-@media (min-width: 768px) {
-  .poster-aside { position: sticky; top: 5rem; height: fit-content; align-self: start; }
+.font-heading {
+  font-family: var(--font-heading), "Exposure VAR", Helvetica, sans-serif;
+  letter-spacing: -0.72px;
+  line-height: 1.0;
+  font-weight: 700;
 }
+
+.font-mono-arc {
+  font-family: var(--font-mono), "ABC Favorit Mono", Menlo, Monaco, monospace;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+}
+
+.arc-shadow-card {
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 5px 5px 0px;
+}
+
+.arc-shadow-elevated {
+  box-shadow: rgba(49, 57, 251, 0.16) 0px 8px 24px -4px, rgba(0, 0, 0, 0.08) 0px 2px 8px 0px;
+}
+
+.arc-cream-surface {
+  background-color: #fffcec;
+  border: 1px solid rgba(49, 57, 251, 0.22);
+}
+
+.arc-blue-card {
+  background-color: #3139fb;
+  color: #ffffff;
+}
+
+.arc-yellow-badge {
+  background-color: #fffadd;
+  color: #3139fb;
+  border: 1px solid rgba(49, 57, 251, 0.2);
+}
+
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

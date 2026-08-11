@@ -1,7 +1,38 @@
-import Link from "next/link";
-import { LoginForm } from "@/components/login-form";
-import { ThemeToggle } from "@/components/theme-toggle";
+export const instant = false;
 
-export default function Page() {
-  return <main className="min-h-screen bg-muted/30"><header className="border-b bg-background"><div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6"><Link href="/" className="font-semibold tracking-tight">DomDock</Link><ThemeToggle /></div></header><section className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12"><div className="w-full max-w-md"><div className="mb-8 text-center"><h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1><p className="mt-2 text-sm text-muted-foreground">Sign in to manage your domains.</p></div><LoginForm /></div></section></main>;
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { ArcHeader } from "@/components/arc-header";
+import { LoginForm } from "@/components/login-form";
+
+export const metadata: Metadata = {
+  title: "Sign In",
+  description: "Sign in to your DomDock account to access your domain portfolio and monitoring dashboard."
+};
+
+export default async function Page() {
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <ArcHeader />
+      <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          <div className="mb-8 text-center">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-[#3139fb]">Welcome back</h1>
+            <p className="mt-2 text-xs font-medium text-[#3139fb]/70">Sign in to manage your domains.</p>
+          </div>
+          <LoginForm />
+        </div>
+      </main>
+    </div>
+  );
 }
+

@@ -8,9 +8,11 @@ export function LogoutButton() {
   const router = useRouter();
 
   const logout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/auth/login");
+    if (window.confirm("Are you sure you want to log out of DomDock?")) {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push("/auth/login");
+    }
   };
 
   return <Button onClick={logout}>Logout</Button>;

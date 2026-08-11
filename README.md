@@ -1,109 +1,218 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+<p align="center">
+  <img src="./public/logo.svg" alt="DomDock Logo" width="80" height="80" />
+</p>
+
+<h1 align="center">DomDock</h1>
 
 <p align="center">
- The fastest way to build apps with Next.js and Supabase
+  <strong>Calm Domain Monitoring</strong> — Track every domain, registrar expiration date, and health status in one clear, quiet workspace.
 </p>
 
 <p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
+  <a href="#-features"><strong>Features</strong></a> ·
+  <a href="#-tech-stack"><strong>Tech Stack</strong></a> ·
+  <a href="#-getting-started"><strong>Getting Started</strong></a> ·
+  <a href="#-project-structure"><strong>Project Structure</strong></a>
 </p>
+
 <br/>
 
-## Features
+![DomDock Banner](app/opengraph-image.png)
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+DomDock is a modern web application designed for web creators, developers, and agency owners to effortlessly monitor domain expiry dates, HTTP/HTTPS availability, status codes, SSL certs, and DNS records. Built with **Next.js 16**, **React 19**, **Supabase**, and **Tailwind CSS**, DomDock combines robust real-time monitoring with Arc-inspired design aesthetics.
 
-## Demo
+---
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+## ✨ Features
 
-## Deploy to Vercel
+- 🔍 **Instant Live Domain Inspector**: Look up domain expiration (via RDAP protocol), website status, and DNS records live right from the home page.
+- 🛡️ **Personalized Monitoring Dashboard**: Authenticated workspace at `/dashboard` to add, view, refresh, inspect detailed DNS records, and manage tracked domains.
+- ⏳ **Expiry Countdowns & Warning Alerts**: Visual alerts for domains nearing registration expiration (within 30 days) and offline/unreachable sites.
+- ⚡ **Real-Time Health Diagnostics & Redirect Handling**: Measures response latency (ms), status codes (`200 OK`, `307 Redirect`, `404`, `500`), and safe SSRF redirect guards.
+- 🌐 **Cookie-Free Domain Favicons**: High-resolution favicon integration powered by the Favicone API (`favicone.com`).
+- 💡 **User Feature Requests**: Built-in modal and API route (`/api/feature-request`) allowing visitors and users to submit feature ideas.
+- 🔒 **Secure Supabase Auth**: Password authentication, server-side session checks, and RLS (Row Level Security) data isolation via `@supabase/ssr`.
 
-Vercel deployment will guide you through creating a Supabase account and project.
+---
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+## 🛠️ Tech Stack
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack, Cache Components) & [React 19](https://react.dev/)
+- **Backend & Database**: [Supabase](https://supabase.com/) (`@supabase/supabase-js`, `@supabase/ssr`)
+- **Styling & UI**: [Tailwind CSS](https://tailwindcss.com/), [Lucide React](https://lucide.dev/)
+- **External Protocols & APIs**: RDAP (Registration Data Access Protocol) via `rdap.org`, Favicone API, Node.js `dns/promises`
+- **Language**: TypeScript
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+---
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+## 🚀 Getting Started
 
-## Clone and run locally
+### Prerequisites
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+- **Node.js**: v20.0.0 or higher
+- **Package Manager**: `npm`, `pnpm`, or `yarn`
+- **Supabase Project**: Create a free project at [supabase.com](https://supabase.com)
 
-2. Create a Next.js app using the Supabase Starter template npx command
+### 1. Clone the Repository
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+```bash
+git clone https://github.com/yshnv/domdock.git
+cd domdock
+```
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+### 2. Install Dependencies
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+```bash
+npm install
+```
 
-3. Use `cd` to change into the app's directory
+### 3. Configure Environment Variables
 
-   ```bash
-   cd with-supabase-app
-   ```
+Create a `.env.local` file in the root directory:
 
-4. Rename `.env.example` to `.env.local` and update the following:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_or_anon_key
+```
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+### 4. Set Up Supabase Database Schema
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+Run the following SQL script in your **Supabase SQL Editor** to create the necessary tables, RLS policies, and triggers:
 
-5. You can now run the Next.js local development server:
+```sql
+-- 1. Main Domains Table
+CREATE TABLE IF NOT EXISTS public.domains (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  name TEXT NOT NULL,
+  expires_at DATE,
+  health TEXT CHECK (health IN ('healthy', 'warning', 'offline', 'pending')) DEFAULT 'pending',
+  last_checked_at TIMESTAMPTZ,
+  status_code INTEGER,
+  response_time_ms INTEGER,
+  dns_records JSONB,
+  created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
-   ```bash
-   npm run dev
-   ```
+ALTER TABLE public.domains ENABLE ROW LEVEL SECURITY;
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+CREATE POLICY "Users can manage their own domains"
+  ON public.domains FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+-- 2. Domain Monitoring Detail Table
+CREATE TABLE IF NOT EXISTS public.domain_monitoring (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  domain_id UUID REFERENCES public.domains(id) ON DELETE CASCADE UNIQUE NOT NULL,
+  registrar_name TEXT,
+  registrar_iana_id TEXT,
+  registrar_url TEXT,
+  dns_provider TEXT,
+  nameservers TEXT[],
+  hosting_provider TEXT,
+  ssl_valid BOOLEAN,
+  ssl_issuer TEXT,
+  ssl_subject TEXT,
+  ssl_valid_from TIMESTAMPTZ,
+  ssl_valid_to TIMESTAMPTZ,
+  ssl_days_remaining INTEGER,
+  ssl_hostname_matches BOOLEAN,
+  ssl_serial_number TEXT,
+  https_available BOOLEAN,
+  website_online BOOLEAN,
+  website_status_code INTEGER,
+  website_response_time_ms INTEGER,
+  website_final_url TEXT,
+  website_redirect_count INTEGER DEFAULT 0,
+  health_score INTEGER DEFAULT 100,
+  email_has_mx BOOLEAN,
+  email_spf_record TEXT,
+  email_dmarc_record TEXT,
+  email_dkim_records TEXT[],
+  last_checked_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+ALTER TABLE public.domain_monitoring ENABLE ROW LEVEL SECURITY;
 
-## Feedback and issues
+CREATE POLICY "Users can view domain_monitoring via domain ownership"
+  ON public.domain_monitoring FOR SELECT
+  USING (EXISTS (SELECT 1 FROM public.domains d WHERE d.id = domain_monitoring.domain_id AND d.user_id = auth.uid()));
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+-- 3. Feature Requests Table
+CREATE TABLE IF NOT EXISTS public.feature_requests (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  category TEXT DEFAULT 'General',
+  description TEXT NOT NULL,
+  contact_email TEXT,
+  created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
-## More Supabase examples
+ALTER TABLE public.feature_requests ENABLE ROW LEVEL SECURITY;
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+CREATE POLICY "Anyone can submit feature requests"
+  ON public.feature_requests FOR INSERT
+  WITH CHECK (true);
+```
+
+### 5. Run the Local Development Server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 📁 Project Structure
+
+```text
+domdock/
+├── app/
+│   ├── api/
+│   │   ├── check-domain/        # Real-time RDAP, DNS & HTTP inspector
+│   │   ├── feature-request/     # Feature request submission route
+│   │   └── domains/[id]/        # Domain checking, events & monitoring API
+│   ├── auth/                    # Sign-up, Login, Forgot & Reset password pages
+│   ├── dashboard/               # Authenticated Workspace Dashboard & Detail views
+│   ├── globals.css              # Design tokens & base CSS
+│   ├── layout.tsx               # Root layout & Metadata configuration
+│   ├── page.tsx                 # Landing page with Live Control Room & About section
+│   ├── robots.ts                # Search engine robots.txt generator
+│   └── sitemap.ts               # Dynamic sitemap.xml generator
+├── components/
+│   ├── arc-header.tsx           # Navigation header component
+│   ├── arc-feature-bento.tsx    # Asymmetric feature bento grid
+│   ├── domain-health-widget.tsx # Live domain inspector card
+│   ├── feature-request-modal.tsx# Feature request submission modal
+│   └── domdock-logo.tsx         # SVG logo mark
+├── lib/
+│   ├── monitoring/              # RDAP, DNS, SSL, and HTTP availability engines
+│   └── supabase/                # Supabase client & server SSR factories
+├── public/
+│   ├── llms.txt                 # Agentic AI documentation file
+│   └── logo.svg                 # Brand mark SVG
+└── package.json                 # Dependencies & version definition (v1.0.0)
+```
+
+---
+
+## 📜 Available Scripts
+
+| Script          | Command         | Description                       |
+| :-------------- | :-------------- | :-------------------------------- |
+| **Development** | `npm run dev`   | Starts Next.js development server |
+| **Build**       | `npm run build` | Builds production bundle          |
+| **Start**       | `npm run start` | Starts production server          |
+| **Lint**        | `npm run lint`  | Runs ESLint checks                |
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
