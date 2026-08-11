@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
@@ -42,6 +43,26 @@ const daysUntil = (date: string | null) => {
   if (isNaN(target)) return null;
   return Math.ceil((target - Date.now()) / 86400000);
 };
+
+function DomainFavicon({ name }: { name: string }) {
+  const [imgError, setImgError] = useState(false);
+  const faviconUrl = `https://favicone.com/${encodeURIComponent(name)}?s=64`;
+
+  return (
+    <div className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-[8px] border border-[#3139fb]/15 bg-[#3139fb]/5 shadow-sm">
+      {!imgError ? (
+        <img
+          src={faviconUrl}
+          alt={`${name} favicon`}
+          className="size-4.5 object-contain"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <Globe className="size-4.5 text-[#3139fb]" />
+      )}
+    </div>
+  );
+}
 
 export default function DashboardClient({
   initialDomains,
@@ -388,9 +409,7 @@ export default function DashboardClient({
                     className="flex flex-col gap-4 rounded-[12px] border border-[#3139fb]/15 bg-white p-4 transition-all hover:border-[#3139fb] sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="grid size-9 place-items-center rounded-[8px] bg-[#3139fb]/10 text-[#3139fb]">
-                        <Globe className="size-4.5" />
-                      </div>
+                      <DomainFavicon name={domain.name} />
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="font-heading text-base font-bold text-[#3139fb]">
