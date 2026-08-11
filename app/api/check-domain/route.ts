@@ -21,13 +21,14 @@ export async function GET(request: Request) {
     );
   }
 
-  // Clean domain input (remove protocol, path, port)
+  // Clean domain input (remove protocol, path, port, and www prefix)
   const cleanDomain = domainParam
     .trim()
     .toLowerCase()
     .replace(/^https?:\/\//, "")
     .replace(/\/.*$/, "")
-    .replace(/:\d+$/, "");
+    .replace(/:\d+$/, "")
+    .replace(/^www\./, "");
 
   if (!cleanDomain) {
     return NextResponse.json(

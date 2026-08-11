@@ -984,6 +984,12 @@ function Section({
   sub?: string;
   children: React.ReactNode;
 }) {
+  const colors = {
+    blue: "border-blue-500/20 bg-blue-500/5 text-blue-700",
+    indigo: "border-indigo-500/20 bg-indigo-500/5 text-indigo-700",
+    amber: "border-amber-500/20 bg-amber-500/5 text-amber-700",
+    green: "border-green-500/20 bg-green-500/5 text-green-700"
+  };
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
       <div className="mb-3">

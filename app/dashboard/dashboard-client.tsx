@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowUpRight,
   LogOut,
@@ -89,6 +90,10 @@ export default function DashboardClient({
     error: null
   });
   const supabase = createClient();
+  const router = useRouter();
+
+  // Strip www. prefix for consistent monitoring (www-redirecting domains still resolve correctly)
+  const normalizeDomain = (name: string) => name.replace(/^www\./i, "");
 
   const runCheckNow = async (domainId: string, domainName: string) => {
     setModalState({
@@ -145,12 +150,12 @@ export default function DashboardClient({
         .order("name", { ascending: true });
 
       if (data && data.length > 0) {
-        // Check website health and RDAP expiry for all domains
         const updatedDomains = await Promise.all(
           data.map(async (domain: Domain) => {
+            const checkName = normalizeDomain(domain.name);
             try {
               const res = await fetch(
-                `/api/check-domain?domain=${encodeURIComponent(domain.name)}`
+                `/api/check-domain?domain=${encodeURIComponent(checkName)}`
               );
               if (res.ok) {
                 const info = await res.json();
@@ -158,20 +163,42 @@ export default function DashboardClient({
                 const newExpiry = info.expiresAt || domain.expires_at;
                 const checkedAt = info.checkedAt || new Date().toISOString();
 
+                // Detect if site redirects to www — update stored name if needed
+                let canonicalDomainName = domain.name;
+                if (info.finalUrl) {
+                  try {
+                    const finalHostname = new URL(info.finalUrl).hostname.toLowerCase();
+                    const rootName = domain.name.replace(/^www\./, "");
+                    if (finalHostname === `www.${rootName}` && domain.name !== `www.${rootName}`) {
+                      canonicalDomainName = `www.${rootName}`;
+                    } else if (finalHostname === rootName && domain.name !== rootName) {
+                      canonicalDomainName = rootName;
+                    }
+                  } catch { /* ignore */ }
+                }
+
                 await supabase
                   .from("domains")
                   .update({
+                    name: canonicalDomainName,
                     health: newHealth,
                     expires_at: newExpiry,
-                    last_checked_at: checkedAt
+                    last_checked_at: checkedAt,
+                    status_code: info.statusCode ?? domain.status_code,
+                    response_time_ms: info.responseTimeMs ?? domain.response_time_ms,
+                    dns_records: info.dnsRecords ?? domain.dns_records
                   })
                   .eq("id", domain.id);
 
                 return {
                   ...domain,
+                  name: canonicalDomainName,
                   health: newHealth,
                   expires_at: newExpiry,
-                  last_checked_at: checkedAt
+                  last_checked_at: checkedAt,
+                  status_code: info.statusCode ?? domain.status_code,
+                  response_time_ms: info.responseTimeMs ?? domain.response_time_ms,
+                  dns_records: info.dnsRecords ?? domain.dns_records
                 };
               }
             } catch (err) {
@@ -187,7 +214,8 @@ export default function DashboardClient({
     } finally {
       setRefreshing(false);
     }
-  }, [supabase]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const now = new Date();
@@ -204,10 +232,16 @@ export default function DashboardClient({
     () => ({
       total: domains.length,
       healthy: domains.filter((d) => d.health === "healthy").length,
-      soon: domains.filter((d) => {
+      issues: domains.filter((d) => d.health === "warning" || d.health === "offline").length,
+      expiringSoon: domains.filter((d) => {
         const days = daysUntil(d.expires_at);
         return days !== null && days <= 30;
-      }).length
+      }).length,
+      avgResponseMs: (() => {
+        const valid = domains.filter((d) => d.response_time_ms != null);
+        if (!valid.length) return null;
+        return Math.round(valid.reduce((s, d) => s + (d.response_time_ms ?? 0), 0) / valid.length);
+      })()
     }),
     [domains]
   );
@@ -251,6 +285,7 @@ export default function DashboardClient({
 
     let fetchedExpiry: string | null = null;
     let fetchedHealth: "healthy" | "warning" | "offline" = "healthy";
+    let canonicalName = cleanName; // may be updated to www.cleanName if redirect detected
 
     try {
       const res = await fetch(
@@ -260,6 +295,16 @@ export default function DashboardClient({
         const info = await res.json();
         if (info.expiresAt) fetchedExpiry = info.expiresAt;
         if (info.health) fetchedHealth = info.health;
+
+        // Detect www redirect: if finalUrl contains www.domain, store as www.domain
+        if (info.finalUrl) {
+          try {
+            const finalHostname = new URL(info.finalUrl).hostname.toLowerCase();
+            if (finalHostname === `www.${cleanName}`) {
+              canonicalName = `www.${cleanName}`;
+            }
+          } catch { /* ignore malformed finalUrl */ }
+        }
       }
     } catch (err) {
       console.error("Failed auto domain check:", err);
@@ -274,7 +319,7 @@ export default function DashboardClient({
         .from("domains")
         .insert({
           user_id: user.id,
-          name: cleanName,
+          name: canonicalName,  // use www-detected canonical form
           expires_at: fetchedExpiry,
           health: fetchedHealth,
           last_checked_at: new Date().toISOString()
@@ -284,6 +329,7 @@ export default function DashboardClient({
 
       if (data) {
         setDomains((current) => [...current, data]);
+        router.refresh(); // invalidate server cache so navigating away and back shows fresh data
       }
     }
 
@@ -296,6 +342,7 @@ export default function DashboardClient({
     const { error } = await supabase.from("domains").delete().eq("id", id);
     if (!error) {
       setDomains((current) => current.filter((d) => d.id !== id));
+      router.refresh(); // invalidate server cache
     }
   };
 
@@ -379,37 +426,46 @@ export default function DashboardClient({
         </div>
 
         {/* Stats Grid */}
-        <div className="mb-10 grid gap-4 sm:grid-cols-3">
-          <Stat
-            label="Total Monitored"
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <StatCard
+            label="Total Domains"
             value={stats.total}
-            detail="Active domain records"
+            sub="Monitored"
+            color="blue"
           />
-          <Stat
-            label="Healthy / Response 200"
+          <StatCard
+            label="Healthy"
             value={stats.healthy}
-            detail="Live website status"
+            sub="200 OK"
+            color="green"
           />
-          <Stat
+          <StatCard
+            label="Issues"
+            value={stats.issues}
+            sub="Warning / Offline"
+            color={stats.issues > 0 ? "red" : "muted"}
+          />
+          <StatCard
             label="Expiring Soon"
-            value={stats.soon}
-            detail="Needs renewal within 30d"
-            alert={stats.soon > 0}
+            value={stats.expiringSoon}
+            sub={stats.avgResponseMs !== null ? `Avg ${stats.avgResponseMs}ms` : "Within 30 days"}
+            color={stats.expiringSoon > 0 ? "amber" : "muted"}
           />
         </div>
 
-        {/* Domains List */}
-        <section className="rounded-[22px] border border-[#3139fb]/20 bg-[#fffcec] p-6 arc-shadow-elevated">
-          <div className="mb-6 flex items-center justify-between border-b border-[#3139fb]/15 pb-4">
+        {/* Domains Table */}
+        <section className="rounded-[22px] border border-[#3139fb]/20 bg-[#fffcec] arc-shadow-elevated overflow-hidden">
+          {/* Table header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#3139fb]/15">
             <div>
-              <h2 className="font-heading text-lg font-bold text-[#3139fb]">
-                Tracked Domains ({domains.length})
+              <h2 className="font-heading text-sm font-bold text-[#3139fb]">
+                Tracked Domains
+                <span className="ml-2 rounded-full bg-[#3139fb]/10 px-2 py-0.5 font-mono text-[10px]">{domains.length}</span>
               </h2>
-              <p className="text-xs text-[#3139fb]/70">
-                Automated WHOIS RDAP expiry and HTTP status checks
-              </p>
+              <p className="text-[11px] text-[#3139fb]/60 mt-0.5">WHOIS · HTTP health · DNS · SSL · SEO — auto-checked</p>
             </div>
-            <span className="font-mono text-xs font-bold text-[#3139fb]/60">
+            <span className="hidden sm:flex items-center gap-1 font-mono text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2.5 py-1">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Live Sync
             </span>
           </div>
@@ -439,130 +495,124 @@ export default function DashboardClient({
           )}
 
           {domains.length === 0 ? (
-            <div className="rounded-[12px] border border-dashed border-[#3139fb]/30 bg-white p-12 text-center">
-              <p className="font-heading text-base font-bold text-[#3139fb]">
-                No domains in workspace yet.
-              </p>
+            <div className="rounded-b-[22px] border border-dashed border-[#3139fb]/30 bg-white m-4 p-10 text-center">
+              <Globe className="mx-auto mb-3 size-8 text-[#3139fb]/30" />
+              <p className="font-heading text-sm font-bold text-[#3139fb]">No domains yet.</p>
               <button
                 onClick={() => setShowAdd(true)}
-                className="mt-3 text-xs font-semibold text-[#3139fb] underline hover:opacity-80"
+                className="mt-2 text-xs font-semibold text-[#3139fb] underline hover:opacity-80"
               >
                 Add your first domain to monitor
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="divide-y divide-[#3139fb]/10">
               {domains.map((domain) => {
                 const days = daysUntil(domain.expires_at);
-                const soon = days !== null && days <= 30;
+                const expiryUrgent = days !== null && days <= 14;
+                const expirySoon = days !== null && days <= 30 && !expiryUrgent;
                 return (
                   <article
                     key={domain.id}
                     className="group bg-white sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] sm:gap-3 sm:items-center px-5 py-4 transition-colors hover:bg-[#fffcec]"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    {/* Domain + favicon */}
+                    <div className="flex items-center gap-3 min-w-0 mb-3 sm:mb-0">
                       <DomainFavicon name={domain.name} />
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <h3 className="font-heading text-base font-bold text-[#3139fb] truncate">
-                            {domain.name}
-                          </h3>
-                          <a
-                            href={`https://${domain.name}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-[#3139fb]/40 hover:text-[#3139fb] shrink-0"
-                            title="Open website"
-                          >
-                            <Globe className="size-3.5" />
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-heading text-sm font-bold text-[#3139fb] truncate max-w-[160px] sm:max-w-none">{domain.name}</h3>
+                          <a href={`https://${domain.name}`} target="_blank" rel="noreferrer"
+                            className="shrink-0 text-[#3139fb]/30 hover:text-[#3139fb] transition-colors" title="Open site">
+                            <ArrowUpRight className="size-3.5" />
                           </a>
                         </div>
-                        <p className="font-mono text-[11px] text-[#3139fb]/60">
-                          Last checked:{" "}
-                          {domain.last_checked_at
-                            ? new Date(
-                                domain.last_checked_at
-                              ).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit"
-                              })
-                            : "Pending"}
-                        </p>
+                        {/* Mobile: show key data inline */}
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 sm:hidden">
+                          <HealthPill health={domain.health} statusCode={domain.status_code} />
+                          {days !== null && (
+                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-mono text-[10px] font-bold ${
+                              expiryUrgent ? "bg-red-100 text-red-700" :
+                              expirySoon ? "bg-amber-100 text-amber-700" :
+                              "bg-[#3139fb]/10 text-[#3139fb]"
+                            }`}>{days}d expiry</span>
+                          )}
+                          {domain.response_time_ms != null && (
+                            <span className="font-mono text-[10px] text-[#3139fb]/60">{domain.response_time_ms}ms</span>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-6 sm:justify-end">
-                      <div>
-                        <span className="font-mono text-[10px] font-bold text-[#3139fb]/60">
-                          STATUS
-                        </span>
-                        <p className="flex items-center gap-1.5 text-xs font-bold text-[#3139fb]">
-                          <span
-                            className={`size-2.5 rounded-full ${
-                              domain.health === "healthy"
-                                ? "bg-emerald-500"
-                                : domain.health === "warning"
-                                  ? "bg-amber-500"
-                                  : "bg-red-500"
-                            }`}
-                          />
-                          {domain.health === "healthy"
-                            ? "Online (200 OK)"
-                            : domain.health}
-                        </p>
-                      </div>
+                    {/* Status — desktop */}
+                    <div className="hidden sm:block">
+                      <HealthPill health={domain.health} statusCode={domain.status_code} />
+                    </div>
 
-                      <div>
-                        <span className="font-mono text-[10px] font-bold text-[#3139fb]/60">
-                          EXPIRY DATE
+                    {/* Expiry — desktop */}
+                    <div className="hidden sm:block">
+                      {days !== null ? (
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 font-mono text-[10px] font-bold ${
+                          expiryUrgent ? "bg-red-100 text-red-700" :
+                          expirySoon ? "bg-amber-100 text-amber-700" :
+                          "bg-[#3139fb]/10 text-[#3139fb]"
+                        }`}>
+                          {expiryUrgent && "⚠ "}{days}d left
                         </span>
-                        <p className="font-mono text-xs font-bold text-[#3139fb]">
-                          {domain.expires_at
-                            ? new Date(
-                                `${domain.expires_at}T00:00:00`
-                              ).toLocaleDateString(undefined, {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric"
-                              })
-                            : "Auto-fetching..."}
-                        </p>
-                      </div>
+                      ) : (
+                        <span className="font-mono text-[10px] text-[#3139fb]/40">—</span>
+                      )}
+                    </div>
 
-                      <div className="text-right">
-                        <span
-                          className={`inline-flex items-center rounded-[6px] px-2.5 py-1 font-mono text-[11px] font-bold ${
-                            soon
-                              ? "bg-[#fffadd] text-[#3139fb] border border-[#3139fb]/20"
-                              : "bg-[#3139fb] text-white"
-                          }`}
-                        >
-                          {days !== null ? `${days}d left` : "Pending"}
+                    {/* Response time — desktop */}
+                    <div className="hidden sm:block">
+                      {domain.response_time_ms != null ? (
+                        <span className={`font-mono text-xs font-bold ${
+                          domain.response_time_ms < 500 ? "text-emerald-600" :
+                          domain.response_time_ms < 1500 ? "text-amber-600" :
+                          "text-red-600"
+                        }`}>
+                          {domain.response_time_ms}ms
                         </span>
-                      </div>
+                      ) : (
+                        <span className="font-mono text-[10px] text-[#3139fb]/40">—</span>
+                      )}
+                    </div>
 
+                    {/* Last checked — desktop */}
+                    <div className="hidden sm:block">
+                      <span className="font-mono text-[10px] text-[#3139fb]/50">
+                        {domain.last_checked_at
+                          ? new Date(domain.last_checked_at).toLocaleString([], {
+                              month: "short", day: "numeric",
+                              hour: "2-digit", minute: "2-digit"
+                            })
+                          : "Pending"}
+                      </span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1.5 justify-end">
                       <button
                         onClick={() => runCheckNow(domain.id, domain.name)}
-                        className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#3139fb]/20 bg-[#3139fb]/10 px-3 py-1.5 font-body text-xs font-semibold text-[#3139fb] transition-all hover:bg-[#3139fb] hover:text-white"
+                        className="rounded-[6px] p-1.5 text-[#3139fb]/50 hover:bg-[#3139fb]/10 hover:text-[#3139fb] transition-colors"
+                        title="Check Now"
                       >
                         <RefreshCw className="size-3.5" />
-                        <span>Check Now</span>
                       </button>
-
                       <Link
                         href={`/dashboard/domain/${domain.id}`}
-                        className="inline-flex items-center gap-1 rounded-[8px] border border-[#3139fb]/20 bg-[#fffcec] px-3 py-1.5 font-body text-xs font-semibold text-[#3139fb] transition-all hover:bg-[#fffadd] hover:border-[#3139fb]"
+                        className="inline-flex items-center gap-1 rounded-[6px] border border-[#3139fb]/20 bg-[#3139fb]/5 px-2.5 py-1.5 text-[11px] font-semibold text-[#3139fb] transition-all hover:bg-[#3139fb] hover:text-white"
                       >
-                        <span>View Details & DNS</span>
-                        <ArrowUpRight className="size-3.5" />
+                        Details
+                        <ArrowUpRight className="size-3" />
                       </Link>
-
                       <button
                         onClick={() => deleteDomain(domain.id)}
-                        className="rounded-[6px] p-2 text-[#3139fb]/40 hover:bg-red-50 hover:text-red-600 transition-colors"
-                        title="Delete domain"
+                        className="rounded-[6px] p-1.5 text-[#3139fb]/30 hover:bg-red-50 hover:text-red-500 transition-colors"
+                        title="Delete"
                       >
-                        <Trash2 className="size-4" />
+                        <Trash2 className="size-3.5" />
                       </button>
                     </div>
                   </article>
@@ -637,32 +687,58 @@ export default function DashboardClient({
   );
 }
 
-function Stat({
+function StatCard({
   label,
   value,
-  detail,
-  alert
+  sub,
+  color
 }: {
   label: string;
   value: number;
-  detail: string;
-  alert?: boolean;
+  sub: string;
+  color: "blue" | "green" | "red" | "amber" | "muted";
 }) {
+  const colors = {
+    blue: "border-[#3139fb]/20 bg-[#3139fb]/5 text-[#3139fb]",
+    green: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    red: "border-red-200 bg-red-50 text-red-700",
+    amber: "border-amber-200 bg-amber-50 text-amber-700",
+    muted: "border-border bg-card text-muted-foreground",
+  };
+  const numColors = {
+    blue: "text-[#3139fb]",
+    green: "text-emerald-600",
+    red: "text-red-600",
+    amber: "text-amber-600",
+    muted: "text-foreground/50",
+  };
   return (
-    <div
-      className={`rounded-[16px] border p-5 arc-shadow-card transition-all ${
-        alert
-          ? "border-[#3139fb] bg-[#fffadd]"
-          : "border-[#3139fb]/15 bg-[#fffcec]"
-      }`}
-    >
-      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#3139fb]/70">
-        {label}
-      </span>
-      <p className="mt-1 font-display text-3xl font-bold text-[#3139fb]">
-        {value}
-      </p>
-      <p className="mt-1 text-xs text-[#3139fb]/70">{detail}</p>
+    <div className={`rounded-[14px] border p-4 ${colors[color]}`}>
+      <p className="font-mono text-[9px] font-bold uppercase tracking-widest opacity-70">{label}</p>
+      <p className={`mt-1 font-display text-3xl font-black ${numColors[color]}`}>{value}</p>
+      <p className="mt-0.5 text-[10px] font-medium opacity-70">{sub}</p>
     </div>
+  );
+}
+
+function HealthPill({
+  health,
+  statusCode
+}: {
+  health: "healthy" | "warning" | "offline" | "pending";
+  statusCode?: number | null;
+}) {
+  const cfg = {
+    healthy: { dot: "bg-emerald-500", bg: "bg-emerald-100 text-emerald-700", label: statusCode ? `${statusCode} OK` : "Online" },
+    warning: { dot: "bg-amber-500", bg: "bg-amber-100 text-amber-700", label: statusCode ? `${statusCode}` : "Warning" },
+    offline: { dot: "bg-red-500", bg: "bg-red-100 text-red-700", label: statusCode ? `${statusCode}` : "Offline" },
+    pending: { dot: "bg-gray-400", bg: "bg-gray-100 text-gray-500", label: "Pending" },
+  }[health] ?? { dot: "bg-gray-400", bg: "bg-gray-100 text-gray-500", label: health };
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[10px] font-bold ${cfg.bg}`}>
+      <span className={`size-1.5 rounded-full ${cfg.dot}`} />
+      {cfg.label}
+    </span>
   );
 }
