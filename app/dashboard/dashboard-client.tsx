@@ -9,11 +9,13 @@ import {
   RefreshCw,
   X,
   Trash2,
-  Globe
+  Globe,
+  Lightbulb
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { DomDockLogo } from "@/components/domdock-logo";
 import { CheckProgressModal } from "@/components/check-progress-modal";
+import { FeatureRequestModal } from "@/components/feature-request-modal";
 
 type DnsRecords = {
   a: string[];
@@ -50,6 +52,7 @@ export default function DashboardClient({
 }) {
   const [domains, setDomains] = useState<Domain[]>(initialDomains);
   const [showAdd, setShowAdd] = useState(false);
+  const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -270,6 +273,13 @@ export default function DashboardClient({
           </Link>
           <div className="flex items-center gap-3 text-xs font-semibold text-[#3139fb]">
             {/* <ThemeToggle /> */}
+            <button
+              onClick={() => setIsFeatureModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#3139fb]/20 bg-[#fffcec] px-3 py-1.5 text-xs font-semibold text-[#3139fb] hover:bg-[#fffadd] transition-colors"
+            >
+              <Lightbulb className="size-3.5 text-[#3139fb]" />
+              <span className="hidden sm:inline">Request Feature</span>
+            </button>
             <span className="hidden rounded-[6px] bg-[#fffcec] px-3 py-1 font-mono text-[11px] border border-[#3139fb]/20 sm:inline-block">
               {email}
             </span>
@@ -282,6 +292,11 @@ export default function DashboardClient({
           </div>
         </div>
       </header>
+
+      <FeatureRequestModal
+        isOpen={isFeatureModalOpen}
+        onClose={() => setIsFeatureModalOpen(false)}
+      />
 
       <div className="mx-auto max-w-[1280px] px-4 py-8 sm:px-6 md:py-12">
         {/* Page Banner */}
