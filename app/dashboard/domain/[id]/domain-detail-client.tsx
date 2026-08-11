@@ -14,9 +14,11 @@ import {
   Trash2,
   Server,
   Network,
-  Lock,
   ExternalLink,
-  Building
+  Building,
+  Mail,
+  AlertTriangle,
+  Lock
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { HealthScoreBadge } from "@/components/health-score-badge";
@@ -65,6 +67,10 @@ type MonitoringDetail = {
   website_final_url: string | null;
   website_redirect_count: number;
   health_score: number | null;
+  email_has_mx: boolean | null;
+  email_spf_record: string | null;
+  email_dmarc_record: string | null;
+  email_dkim_records: string[] | null;
   last_checked_at: string | null;
 };
 
@@ -265,20 +271,20 @@ export default function DomainDetailClient({
         {/* Domain Title & Header Status */}
         <div className="mb-8 rounded-2xl border border-border bg-card p-6 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="grid size-12 place-items-center rounded-xl bg-[#3139fb]/10 text-[#3139fb]">
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#3139fb]/10 text-[#3139fb]">
                 <Globe className="size-6" />
               </div>
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl break-all">
                     {domain.name}
                   </h1>
                   <a
                     href={`https://${domain.name}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#3139fb] hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#3139fb] hover:underline shrink-0"
                   >
                     Visit <ExternalLink className="size-3" />
                   </a>
@@ -445,6 +451,60 @@ export default function DomainDetailClient({
                   <DetailRow label="Redirect Count" value={String(monitoring?.website_redirect_count ?? 0)} />
                 </div>
               </div>
+
+              {/* Email Security & Deliverability */}
+              <div className="rounded-2xl border border-border bg-card p-6 md:col-span-2">
+                <h3 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
+                  <Mail className="size-4 text-[#3139fb]" /> Email Security & Deliverability
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">Checks presence of MX and critical email authentication records (SPF, DMARC, DKIM).</p>
+                <div className="mt-4 divide-y divide-border/60 text-xs">
+                  <DetailRow 
+                    label="Mail Exchanger (MX)" 
+                    value={
+                      <div className="flex items-center gap-2 justify-end">
+                        {monitoring?.email_has_mx ? <Check className="size-3.5 text-emerald-500" /> : <AlertTriangle className="size-3.5 text-amber-500" />}
+                        <span>{monitoring?.email_has_mx ? "Configured" : "Missing or Misconfigured"}</span>
+                      </div>
+                    } 
+                  />
+                  <DetailRow 
+                    label="SPF Record" 
+                    value={
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          {monitoring?.email_spf_record ? <Check className="size-3.5 text-emerald-500" /> : <AlertTriangle className="size-3.5 text-amber-500" />}
+                          <span>{monitoring?.email_spf_record ? "Valid SPF Found" : "Missing SPF Record"}</span>
+                        </div>
+                        {monitoring?.email_spf_record && <span className="font-mono text-[10px] text-muted-foreground">{monitoring.email_spf_record}</span>}
+                      </div>
+                    } 
+                  />
+                  <DetailRow 
+                    label="DMARC Policy" 
+                    value={
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          {monitoring?.email_dmarc_record ? <Check className="size-3.5 text-emerald-500" /> : <AlertTriangle className="size-3.5 text-amber-500" />}
+                          <span>{monitoring?.email_dmarc_record ? "DMARC Configured" : "Missing DMARC Policy"}</span>
+                        </div>
+                        {monitoring?.email_dmarc_record && <span className="font-mono text-[10px] text-muted-foreground">{monitoring.email_dmarc_record}</span>}
+                      </div>
+                    } 
+                  />
+                  <DetailRow 
+                    label="DKIM (Best Effort)" 
+                    value={
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          {monitoring?.email_dkim_records && monitoring.email_dkim_records.length > 0 ? <Check className="size-3.5 text-emerald-500" /> : <span className="text-muted-foreground">-</span>}
+                          <span>{monitoring?.email_dkim_records && monitoring.email_dkim_records.length > 0 ? "DKIM Found" : "Not Found (Checked common selectors)"}</span>
+                        </div>
+                      </div>
+                    } 
+                  />
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -563,9 +623,9 @@ function OverviewCard({
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-2.5">
-      <span className="font-medium text-muted-foreground">{label}</span>
-      <span className="font-semibold text-foreground text-right">{value}</span>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2.5 gap-2 sm:gap-4">
+      <span className="font-medium text-muted-foreground shrink-0">{label}</span>
+      <span className="font-semibold text-foreground sm:text-right break-all">{value}</span>
     </div>
   );
 }
@@ -587,11 +647,11 @@ function DnsRecordSection({
       <div className="mt-3 space-y-2">
         {items && items.length > 0 ? (
           items.map((item) => (
-            <div key={item} className="flex items-center justify-between gap-2 rounded-lg bg-muted/40 p-2 text-xs font-mono">
-              <span className="truncate text-foreground">{item}</span>
+            <div key={item} className="flex items-start sm:items-center justify-between gap-2 rounded-lg bg-muted/40 p-2 text-xs font-mono">
+              <span className="break-all text-foreground min-w-0">{item}</span>
               <button
                 onClick={() => onCopy(item)}
-                className="shrink-0 p-1 text-muted-foreground hover:text-foreground"
+                className="shrink-0 p-1 text-muted-foreground hover:text-foreground mt-0.5 sm:mt-0"
                 title="Copy to clipboard"
               >
                 {copied === item ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}

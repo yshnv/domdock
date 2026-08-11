@@ -31,7 +31,6 @@ DomDock is a modern web application designed for web creators, developers, and a
 - ⚡ **Real-Time Health Diagnostics & Redirect Handling**: Measures response latency (ms), status codes (`200 OK`, `307 Redirect`, `404`, `500`), and safe SSRF redirect guards.
 - 🌐 **Cookie-Free Domain Favicons**: High-resolution favicon integration powered by the Favicone API (`favicone.com`).
 - 💡 **User Feature Requests**: Built-in modal and API route (`/api/feature-request`) allowing visitors and users to submit feature ideas.
-- 🤖 **SEO & Agentic AI Optimization**: Standardized `llms.txt`, dynamic `sitemap.xml`, `robots.txt`, and full OpenGraph/Twitter Cards for search engines and LLM crawlers.
 - 🔒 **Secure Supabase Auth**: Password authentication, server-side session checks, and RLS (Row Level Security) data isolation via `@supabase/ssr`.
 
 ---
@@ -127,6 +126,10 @@ CREATE TABLE IF NOT EXISTS public.domain_monitoring (
   website_final_url TEXT,
   website_redirect_count INTEGER DEFAULT 0,
   health_score INTEGER DEFAULT 100,
+  email_has_mx BOOLEAN,
+  email_spf_record TEXT,
+  email_dmarc_record TEXT,
+  email_dkim_records TEXT[],
   last_checked_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL

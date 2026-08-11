@@ -26,7 +26,13 @@ export type FullDomainMonitoringResult = {
     ns: string[];
     txt: string[];
     cname: string[];
+    dmarc: string[];
+    dkim: string[];
   };
+  emailHasMx: boolean;
+  emailSpfRecord: string | null;
+  emailDmarcRecord: string | null;
+  emailDkimRecords: string[];
   hostingProvider: string;
   sslValid: boolean | null;
   sslIssuer: string | null;
@@ -146,6 +152,12 @@ export async function runFullDomainCheck(
     console.warn(`[domainService] Snapshot/Event persistence warning for ${domainId}:`, dbErr);
   }
 
+  // Extract Email Health records
+  const emailHasMx = dnsRes.mx.length > 0;
+  const emailSpfRecord = dnsRes.txt.find((r) => r.toLowerCase().startsWith("v=spf1")) || null;
+  const emailDmarcRecord = dnsRes.dmarc.find((r) => r.toLowerCase().startsWith("v=dmarc1")) || null;
+  const emailDkimRecords = dnsRes.dkim.filter((r) => r.toLowerCase().startsWith("v=dkim1") || r.toLowerCase().startsWith("k=rsa"));
+
   // 7. Save to domain_monitoring table & update main domains row
   try {
     const monitoringPayload = {
@@ -171,6 +183,10 @@ export async function runFullDomainCheck(
       website_final_url: siteRes.finalUrl,
       website_redirect_count: siteRes.redirectCount,
       health_score: healthResult.score,
+      email_has_mx: emailHasMx,
+      email_spf_record: emailSpfRecord,
+      email_dmarc_record: emailDmarcRecord,
+      email_dkim_records: emailDkimRecords,
       last_checked_at: checkedAt,
       updated_at: checkedAt
     };
@@ -217,6 +233,10 @@ export async function runFullDomainCheck(
     dnsProvider: dnsProviderInfo.dnsProvider,
     nameservers: dnsProviderInfo.nameservers,
     dnsRecords: dnsRes,
+    emailHasMx,
+    emailSpfRecord,
+    emailDmarcRecord,
+    emailDkimRecords,
     hostingProvider: hostingInfo.hostingProvider,
     sslValid: sslRes.sslValid,
     sslIssuer: sslRes.issuer,
