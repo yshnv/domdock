@@ -46,7 +46,7 @@ const daysUntil = (date: string | null) => {
 
 function DomainFavicon({ name }: { name: string }) {
   const [imgError, setImgError] = useState(false);
-  const faviconUrl = `https://favicone.com/${encodeURIComponent(name)}?s=64`;
+  const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(name)}&sz=64`;
 
   return (
     <div className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-[8px] border border-[#3139fb]/15 bg-[#3139fb]/5 shadow-sm">
@@ -414,6 +414,30 @@ export default function DashboardClient({
             </span>
           </div>
 
+          {/* Column headers — visible on sm+ */}
+          {domains.length > 0 && (
+            <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-3 px-5 py-2 border-b border-[#3139fb]/10 bg-[#3139fb]/5">
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Domain
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Status
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Expiry
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Response
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Checked
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Actions
+              </span>
+            </div>
+          )}
+
           {domains.length === 0 ? (
             <div className="rounded-[12px] border border-dashed border-[#3139fb]/30 bg-white p-12 text-center">
               <p className="font-heading text-base font-bold text-[#3139fb]">
@@ -434,7 +458,7 @@ export default function DashboardClient({
                 return (
                   <article
                     key={domain.id}
-                    className="flex flex-col gap-4 rounded-[12px] border border-[#3139fb]/15 bg-white p-4 transition-all hover:border-[#3139fb] sm:flex-row sm:items-center sm:justify-between"
+                    className="group bg-white sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] sm:gap-3 sm:items-center px-5 py-4 transition-colors hover:bg-[#fffcec]"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <DomainFavicon name={domain.name} />
