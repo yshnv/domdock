@@ -14,12 +14,23 @@ import {
 import { createClient } from "@/lib/supabase/client";
 // import { ThemeToggle } from "@/components/theme-toggle";
 
+type DnsRecords = {
+  a: string[];
+  aaaa: string[];
+  mx: Array<{ exchange: string; priority: number }>;
+  ns: string[];
+  txt: string[];
+};
+
 type Domain = {
   id: string;
   name: string;
   expires_at: string | null;
   health: "healthy" | "warning" | "offline" | "pending";
   last_checked_at: string | null;
+  status_code?: number | null;
+  response_time_ms?: number | null;
+  dns_records?: DnsRecords | null;
 };
 
 const daysUntil = (date: string | null) => {
@@ -385,6 +396,14 @@ export default function DashboardClient({
                           {days !== null ? `${days}d left` : "Pending"}
                         </span>
                       </div>
+
+                      <Link
+                        href={`/app/domain/${domain.id}`}
+                        className="inline-flex items-center gap-1 rounded-[8px] border border-[#3139fb]/20 bg-[#fffcec] px-3 py-1.5 font-body text-xs font-semibold text-[#3139fb] transition-all hover:bg-[#fffadd] hover:border-[#3139fb]"
+                      >
+                        <span>View Details & DNS</span>
+                        <ArrowUpRight className="size-3.5" />
+                      </Link>
 
                       <button
                         onClick={() => deleteDomain(domain.id)}
