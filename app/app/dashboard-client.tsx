@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { DomDockLogo } from "@/components/domdock-logo";
-// import { ThemeToggle } from "@/components/theme-toggle";
+import { CheckProgressModal } from "@/components/check-progress-modal";
 
 type DnsRecords = {
   a: string[];
@@ -53,7 +53,62 @@ export default function DashboardClient({
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    domainName: string;
+    step: number;
+    error: string | null;
+  }>({
+    isOpen: false,
+    domainName: "",
+    step: 0,
+    error: null
+  });
   const supabase = createClient();
+
+  const runCheckNow = async (domainId: string, domainName: string) => {
+    setModalState({
+      isOpen: true,
+      domainName,
+      step: 0,
+      error: null
+    });
+
+    const interval = setInterval(() => {
+      setModalState((prev) => ({
+        ...prev,
+        step: Math.min(prev.step + 1, 5)
+      }));
+    }, 600);
+
+    try {
+      const res = await fetch(`/api/domains/${domainId}/check`, { method: "POST" });
+      clearInterval(interval);
+
+      if (!res.ok) {
+        const errJson = await res.json();
+        throw new Error(errJson.error || "Failed to check domain");
+      }
+
+      setModalState((prev) => ({ ...prev, step: 6 }));
+
+      // Refresh list
+      const { data: updatedDomains } = await supabase
+        .from("domains")
+        .select("*")
+        .order("name", { ascending: true });
+
+      if (updatedDomains) setDomains(updatedDomains);
+
+      setTimeout(() => {
+        setModalState({ isOpen: false, domainName: "", step: 0, error: null });
+      }, 800);
+    } catch (err: unknown) {
+      clearInterval(interval);
+      const msg = err instanceof Error ? err.message : "Error checking domain";
+      setModalState((prev) => ({ ...prev, error: msg }));
+    }
+  };
 
   const refresh = useCallback(async () => {
     setRefreshing(true);
@@ -398,6 +453,14 @@ export default function DashboardClient({
                         </span>
                       </div>
 
+                      <button
+                        onClick={() => runCheckNow(domain.id, domain.name)}
+                        className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#3139fb]/20 bg-[#3139fb]/10 px-3 py-1.5 font-body text-xs font-semibold text-[#3139fb] transition-all hover:bg-[#3139fb] hover:text-white"
+                      >
+                        <RefreshCw className="size-3.5" />
+                        <span>Check Now</span>
+                      </button>
+
                       <Link
                         href={`/app/domain/${domain.id}`}
                         className="inline-flex items-center gap-1 rounded-[8px] border border-[#3139fb]/20 bg-[#fffcec] px-3 py-1.5 font-body text-xs font-semibold text-[#3139fb] transition-all hover:bg-[#fffadd] hover:border-[#3139fb]"
@@ -473,6 +536,15 @@ export default function DashboardClient({
           </form>
         </div>
       )}
+
+      {/* Check Progress Modal */}
+      <CheckProgressModal
+        isOpen={modalState.isOpen}
+        domainName={modalState.domainName}
+        currentStep={modalState.step}
+        error={modalState.error}
+        onClose={() => setModalState((prev) => ({ ...prev, isOpen: false }))}
+      />
     </main>
   );
 }
