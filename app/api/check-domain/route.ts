@@ -1,4 +1,13 @@
 import { NextResponse } from "next/server";
+import dns from "node:dns/promises";
+
+export type DnsRecords = {
+  a: string[];
+  aaaa: string[];
+  mx: Array<{ exchange: string; priority: number }>;
+  ns: string[];
+  txt: string[];
+};
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -26,10 +35,11 @@ export async function GET(request: Request) {
     );
   }
 
-  // Run RDAP expiration lookup and Website status check in parallel
-  const [expiryResult, siteResult] = await Promise.all([
+  // Run RDAP expiration lookup, Website status check, and DNS resolution in parallel
+  const [expiryResult, siteResult, dnsResult] = await Promise.all([
     fetchRdapExpiry(cleanDomain),
-    checkWebsiteStatus(cleanDomain)
+    checkWebsiteStatus(cleanDomain),
+    fetchDnsRecords(cleanDomain)
   ]);
 
   return NextResponse.json({
@@ -39,8 +49,34 @@ export async function GET(request: Request) {
     statusCode: siteResult.statusCode,
     statusText: siteResult.statusText,
     responseTimeMs: siteResult.responseTimeMs,
+    dnsRecords: dnsResult,
     checkedAt: new Date().toISOString()
   });
+}
+
+async function fetchDnsRecords(domain: string): Promise<DnsRecords> {
+  try {
+    const [a, aaaa, mx, ns, txt] = await Promise.all([
+      dns.resolve4(domain).catch(() => []),
+      dns.resolve6(domain).catch(() => []),
+      dns.resolveMx(domain).catch(() => []),
+      dns.resolveNs(domain).catch(() => []),
+      dns.resolveTxt(domain).then((entries) => entries.map((e) => e.join(""))).catch(() => [])
+    ]);
+
+    return {
+      a,
+      aaaa,
+      mx: mx.map((item: { exchange: string; priority: number }) => ({
+        exchange: item.exchange,
+        priority: item.priority
+      })),
+      ns,
+      txt
+    };
+  } catch {
+    return { a: [], aaaa: [], mx: [], ns: [], txt: [] };
+  }
 }
 
 async function fetchRdapExpiry(domain: string): Promise<string | null> {
