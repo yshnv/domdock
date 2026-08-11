@@ -217,11 +217,37 @@ export default function DashboardClient({
     if (!name.trim()) return;
 
     setBusy(true);
-    const cleanName = name
-      .trim()
-      .toLowerCase()
-      .replace(/^https?:\/\//, "")
-      .replace(/\/.*$/, "");
+
+    let cleanName = name.trim().toLowerCase();
+
+    // Ensure we can parse it as a URL
+    if (!cleanName.startsWith("http://") && !cleanName.startsWith("https://")) {
+      cleanName = "https://" + cleanName;
+    }
+
+    try {
+      const url = new URL(cleanName);
+      cleanName = url.hostname;
+    } catch {
+      cleanName = name
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, "")
+        .split("/")[0]
+        .split("?")[0]
+        .split("#")[0];
+    }
+
+    // Remove 'www.' prefix
+    cleanName = cleanName.replace(/^www\./, "");
+
+    // Basic domain validation
+    const domainRegex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}$/;
+    if (!domainRegex.test(cleanName)) {
+      alert("Please enter a valid domain name (e.g. example.com)");
+      setBusy(false);
+      return;
+    }
 
     let fetchedExpiry: string | null = null;
     let fetchedHealth: "healthy" | "warning" | "offline" = "healthy";
@@ -410,18 +436,18 @@ export default function DashboardClient({
                     key={domain.id}
                     className="flex flex-col gap-4 rounded-[12px] border border-[#3139fb]/15 bg-white p-4 transition-all hover:border-[#3139fb] sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
                       <DomainFavicon name={domain.name} />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-heading text-base font-bold text-[#3139fb]">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <h3 className="font-heading text-base font-bold text-[#3139fb] truncate">
                             {domain.name}
                           </h3>
                           <a
                             href={`https://${domain.name}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-[#3139fb]/40 hover:text-[#3139fb]"
+                            className="text-[#3139fb]/40 hover:text-[#3139fb] shrink-0"
                             title="Open website"
                           >
                             <Globe className="size-3.5" />

@@ -15,31 +15,37 @@ export async function POST(request: Request) {
 
     const supabase = await createClient();
 
-    // Insert into feature_requests table if created
+    let user = null;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { error: dbError } = await supabase.from("feature_requests").insert({
-        user_id: user?.id || null,
-        title: title.trim(),
-        category: category || "General",
-        description: description.trim(),
-        contact_email: email ? email.trim() : user?.email || null,
-        created_at: new Date().toISOString()
-      });
+      const { data } = await supabase.auth.getUser();
+      user = data?.user || null;
+    } catch {
+      // Safely ignore auth errors if user is not signed in
+    }
+    const { error: dbError } = await supabase.from("feature_requests").insert({
+      user_id: user?.id || null,
+      title: title.trim(),
+      category: category || "General",
+      description: description.trim(),
+      contact_email: email ? email.trim() : user?.email || null
+    });
 
-      if (dbError) {
-        console.warn("[feature-request] DB insert warning:", dbError.message);
-      }
-    } catch (dbErr) {
-      console.warn("[feature-request] DB query exception:", dbErr);
+    if (dbError) {
+      console.error("[feature-request] DB insert error:", dbError);
+      return NextResponse.json(
+        { error: `Failed to save request: ${dbError.message}` },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
       success: true,
-      message: "Thank you! Your feature request has been submitted successfully."
+      message:
+        "Thank you! Your feature request has been submitted successfully."
     });
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : "Internal Server Error";
+    const errorMessage =
+      err instanceof Error ? err.message : "Internal Server Error";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
