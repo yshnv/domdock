@@ -5,6 +5,7 @@ import { detectDnsProvider } from "./dnsProviderDetector";
 import { detectHostingProvider } from "./hostingDetector";
 import { checkSslCertificate } from "./sslMonitor";
 import { checkWebsiteAvailability } from "./websiteMonitor";
+import { checkSeoHealth, SeoCheckResult } from "./seoMonitor";
 import { calculateDomainHealthScore } from "./healthScoreService";
 import { compareSnapshots, DomainMonitoringSnapshot } from "./domainEventService";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -54,6 +55,7 @@ export type FullDomainMonitoringResult = {
   healthLabel: string;
   healthChecks: Array<{ label: string; status: string; points: number }>;
   lastCheckedAt: string;
+  seo: SeoCheckResult | null;
 };
 
 export async function runFullDomainCheck(
@@ -65,11 +67,12 @@ export async function runFullDomainCheck(
   await assertSafeDomainTarget(clean);
 
   // 1. Run all checks in parallel safely
-  const [rdapRes, dnsRes, sslRes, siteRes] = await Promise.all([
+  const [rdapRes, dnsRes, sslRes, siteRes, seoRes] = await Promise.all([
     fetchRdapData(clean),
     fetchDnsRecords(clean),
     checkSslCertificate(clean),
-    checkWebsiteAvailability(clean)
+    checkWebsiteAvailability(clean),
+    checkSeoHealth(clean)
   ]);
 
   // 2. Detect Providers
@@ -187,6 +190,25 @@ export async function runFullDomainCheck(
       email_spf_record: emailSpfRecord,
       email_dmarc_record: emailDmarcRecord,
       email_dkim_records: emailDkimRecords,
+      seo_score: seoRes?.score ?? null,
+      seo_title: seoRes?.title ?? null,
+      seo_meta_description: seoRes?.metaDescription ?? null,
+      seo_canonical_url: seoRes?.canonicalUrl ?? null,
+      seo_robots_meta: seoRes?.robotsMeta ?? null,
+      seo_is_indexable: seoRes?.isIndexable ?? null,
+      seo_https_redirects: seoRes?.httpsRedirects ?? null,
+      seo_www_canonical: seoRes?.wwwCanonical ?? null,
+      seo_has_og: seoRes?.hasOpenGraph ?? null,
+      seo_og_title: seoRes?.ogTitle ?? null,
+      seo_og_description: seoRes?.ogDescription ?? null,
+      seo_og_image: seoRes?.ogImage ?? null,
+      seo_has_twitter_card: seoRes?.hasTwitterCard ?? null,
+      seo_twitter_card: seoRes?.twitterCard ?? null,
+      seo_robots_txt_exists: seoRes?.robotsTxtExists ?? null,
+      seo_robots_txt_blocks_self: seoRes?.robotsTxtBlocksSelf ?? null,
+      seo_sitemap_found: seoRes?.sitemapFound ?? null,
+      seo_sitemap_url: seoRes?.sitemapUrl ?? null,
+      seo_checks: seoRes?.checks ?? null,
       last_checked_at: checkedAt,
       updated_at: checkedAt
     };
@@ -257,6 +279,7 @@ export async function runFullDomainCheck(
     healthScore: healthResult.score,
     healthLabel: healthResult.label,
     healthChecks: healthResult.checks,
-    lastCheckedAt: checkedAt
+    lastCheckedAt: checkedAt,
+    seo: seoRes
   };
 }
