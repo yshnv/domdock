@@ -1,13 +1,35 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, LayoutDashboard, ShieldCheck, User } from "lucide-react";
 import { DomDockLogo } from "@/components/domdock-logo";
-// import { ThemeToggle } from "@/components/theme-toggle";
+import { createClient } from "@/lib/supabase/client";
 
 const repositoryUrl = "https://github.com/yshnv/domdock";
 
 export function ArcHeader() {
+  const [user, setUser] = useState<unknown>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) {
+        setUser(data.user);
+      }
+    });
+
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 h-16 w-full border-b border-border/30 bg-background/90 backdrop-blur-md transition-all duration-150 ease-out">
       <div className="mx-auto flex h-full max-w-[1280px] items-center justify-between px-4 sm:px-6">
@@ -67,20 +89,32 @@ export function ArcHeader() {
 
         {/* Actions & CTA */}
         <div className="flex items-center gap-3">
-          {/* <ThemeToggle /> */}
-          <Link
-            href="/auth/login"
-            className="hidden text-xs font-semibold text-foreground hover:underline sm:inline-block"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/auth/sign-up"
-            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[8px] bg-primary px-4 font-body text-xs font-semibold text-primary-foreground shadow-[0_2px_8px_rgba(49,57,251,0.2)] transition-all duration-100 ease-out hover:bg-primary/90 active:scale-[0.98]"
-          >
-            <ShieldCheck className="size-3.5" />
-            <span>Start Tracking</span>
-          </Link>
+          {user ? (
+            <Link
+              href="/dashboard"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[8px] bg-primary px-4 font-body text-xs font-semibold text-primary-foreground shadow-[0_2px_8px_rgba(49,57,251,0.2)] transition-all duration-100 ease-out hover:bg-primary/90 active:scale-[0.98]"
+            >
+              <LayoutDashboard className="size-3.5" />
+              <span>Go to Dashboard</span>
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                className="inline-flex h-9 items-center justify-center gap-1 rounded-[8px] border border-primary/20 bg-card px-3.5 text-xs font-semibold text-primary shadow-sm hover:bg-accent transition-all duration-100 active:scale-[0.98]"
+              >
+                <User className="size-3.5" />
+                <span>Sign in</span>
+              </Link>
+              <Link
+                href="/auth/sign-up"
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[8px] bg-primary px-4 font-body text-xs font-semibold text-primary-foreground shadow-[0_2px_8px_rgba(49,57,251,0.2)] transition-all duration-100 ease-out hover:bg-primary/90 active:scale-[0.98]"
+              >
+                <ShieldCheck className="size-3.5" />
+                <span>Start Tracking</span>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
