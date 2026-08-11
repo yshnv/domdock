@@ -209,14 +209,8 @@ export default function DomainDetailClient({
       .from("domains")
       .delete()
       .eq("id", domain.id);
-    if (!error) {
-      // Invalidate the Next.js router cache so the dashboard server component
-      // re-fetches fresh data instead of serving the stale cached version.
-      router.refresh();
-      router.push("/dashboard");
-    } else {
-      setDeleting(false);
-    }
+    if (!error) router.push("/dashboard");
+    else setDeleting(false);
   };
 
   const logout = async () => {

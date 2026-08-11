@@ -47,7 +47,7 @@ const daysUntil = (date: string | null) => {
 
 function DomainFavicon({ name }: { name: string }) {
   const [imgError, setImgError] = useState(false);
-  const faviconUrl = `https://favicone.com/${encodeURIComponent(name)}?s=64`;
+  const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(name)}&sz=64`;
 
   return (
     <div className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-[8px] border border-[#3139fb]/15 bg-[#3139fb]/5 shadow-sm">
@@ -473,12 +473,24 @@ export default function DashboardClient({
           {/* Column headers — visible on sm+ */}
           {domains.length > 0 && (
             <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-3 px-5 py-2 border-b border-[#3139fb]/10 bg-[#3139fb]/5">
-              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">Domain</span>
-              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">Status</span>
-              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">Expiry</span>
-              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">Response</span>
-              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">Checked</span>
-              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">Actions</span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Domain
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Status
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Expiry
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Response
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Checked
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#3139fb]/50">
+                Actions
+              </span>
             </div>
           )}
 
