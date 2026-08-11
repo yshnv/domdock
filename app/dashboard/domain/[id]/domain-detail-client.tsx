@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
   ArrowLeft,
-  ArrowUpRight,
   Check,
   Copy,
   Globe,
@@ -14,13 +13,9 @@ import {
   ShieldCheck,
   Trash2,
   Server,
-  FileText,
-  Mail,
   Network,
   Lock,
-  Clock,
   ExternalLink,
-  ShieldAlert,
   Building
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -190,15 +185,17 @@ export default function DomainDetailClient({
     setDeleting(true);
     const { error } = await supabase.from("domains").delete().eq("id", domain.id);
     if (!error) {
-      router.push("/app");
+      router.push("/dashboard");
     } else {
       setDeleting(false);
     }
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
+    if (window.confirm("Are you sure you want to log out of DomDock?")) {
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    }
   };
 
   const dns = domain.dns_records || { a: [], aaaa: [], mx: [], ns: [], txt: [] };
@@ -210,7 +207,7 @@ export default function DomainDetailClient({
         <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
-              href="/app"
+              href="/dashboard"
               className="flex items-center gap-2 font-heading text-base font-bold text-foreground"
             >
               <div className="grid size-7 place-items-center rounded-[8px] bg-[#3139fb] text-white shadow-sm">
@@ -241,7 +238,7 @@ export default function DomainDetailClient({
         {/* Top Back Navigation & Action Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <Link
-            href="/app"
+            href="/dashboard"
             className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-colors"
           >
             <ArrowLeft className="size-4" /> Back to Dashboard

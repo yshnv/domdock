@@ -14,11 +14,63 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "DomDock — Experience calmer domain tracking",
+  title: {
+    default: "DomDock — Calm Domain & RDAP Monitoring Workspace",
+    template: "%s | DomDock"
+  },
   description:
-    "Experience a calmer, focused domain health & expiry monitoring workspace. Designed for creators who ship on the web.",
+    "Experience a calmer, focused domain health & expiry monitoring workspace. Track domain expirations, DNS records, SSL certificates, and hosting providers in one clear view.",
+  keywords: [
+    "domain monitoring",
+    "domain expiration tracker",
+    "RDAP registry lookup",
+    "SSL certificate monitoring",
+    "DNS inspector",
+    "domain portfolio management",
+    "web hosting detector",
+    "open-source domain tool",
+    "DomDock"
+  ],
+  authors: [{ name: "DomDock Team", url: defaultUrl }],
+  creator: "DomDock",
+  publisher: "DomDock",
+  openGraph: {
+    title: "DomDock — Calm Domain & RDAP Monitoring Workspace",
+    description:
+      "Track domain expirations, DNS records, SSL certs, and hosting providers in one clear, quiet workspace.",
+    url: defaultUrl,
+    siteName: "DomDock",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "DomDock Domain Control Room"
+      }
+    ],
+    locale: "en_US",
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DomDock — Calm Domain & RDAP Monitoring Workspace",
+    description:
+      "Track domain expirations, DNS records, SSL certs, and hosting providers.",
+    images: ["/twitter-image.png"]
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1
+    }
+  },
   icons: {
-    icon: "/logo.svg"
+    icon: "/logo.svg",
+    apple: "/logo.svg"
   }
 };
 

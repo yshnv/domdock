@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowLeft, Github, ShieldCheck } from "lucide-react";
 import { ArcHeader } from "@/components/arc-header";
+
+export const metadata: Metadata = {
+  title: "About DomDock — Calm Domain Visibility for Builders",
+  description:
+    "Learn about DomDock: an open-source, distraction-free workspace for domain expiration, DNS, and SSL monitoring."
+};
 
 export default function AboutPage() {
   return (
