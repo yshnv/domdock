@@ -1,10 +1,16 @@
 export const instant = false;
 
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import DashboardClient from "./dashboard-client";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Workspace Dashboard",
+  description: "Manage your domain portfolio, monitor DNS records, SSL certificates, and registry expiration dates."
+};
 
 export default function AppPage() {
   return (

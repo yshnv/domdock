@@ -1,9 +1,15 @@
 export const instant = false;
 
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ArcHeader } from "@/components/arc-header";
 import { SignUpForm } from "@/components/sign-up-form";
+
+export const metadata: Metadata = {
+  title: "Create Account",
+  description: "Start monitoring your domain portfolio with automated RDAP lookup, SSL cert tracking, and DNS inspection."
+};
 
 export default async function Page() {
   const supabase = await createClient();

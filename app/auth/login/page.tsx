@@ -1,9 +1,15 @@
 export const instant = false;
 
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ArcHeader } from "@/components/arc-header";
 import { LoginForm } from "@/components/login-form";
+
+export const metadata: Metadata = {
+  title: "Sign In",
+  description: "Sign in to your DomDock account to access your domain portfolio and monitoring dashboard."
+};
 
 export default async function Page() {
   const supabase = await createClient();
