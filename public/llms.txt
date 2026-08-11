@@ -1,0 +1,17 @@
+# DomDock — Calm Domain & RDAP Monitoring Workspace
+
+> DomDock is an open-source, calm domain health and expiry monitoring workspace built for web developers, creators, and product teams. It provides automated RDAP registry queries, SSL certificate validity tracking, DNS inspection, and uptime monitoring without registrar upselling or clutter.
+
+## Core Features
+
+- [Domain Portfolio Overview](https://domdock.vercel.app/dashboard): Real-time expiration tracking, RDAP registry lookup, and status code checks.
+- [DNS & SSL Inspection](https://domdock.vercel.app/dashboard): Automated SSL validity countdowns, issuer details, and DNS record lookup.
+- [About & Manifesto](https://domdock.vercel.app/about): Learn why DomDock was created to provide a quiet, focused developer utility tool.
+- [Source Code on GitHub](https://github.com/yshnv/domdock): Open-source repository with Next.js 16, Supabase Auth, and Tailwind CSS.
+
+## Documentation & Resources
+
+- [Sitemap](https://domdock.vercel.app/sitemap.xml): Complete list of indexable pages.
+- [Robots Configuration](https://domdock.vercel.app/robots.txt): Crawler rules and sitemap reference.
+- [Sign In](https://domdock.vercel.app/auth/login): Access your workspace dashboard.
+- [Sign Up](https://domdock.vercel.app/auth/sign-up): Create a free account to track your web assets.

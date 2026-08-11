@@ -7,10 +7,7 @@ import { DomDockLogo } from "@/components/domdock-logo";
 import { createClient } from "@/lib/supabase/client";
 import { FeatureRequestModal } from "@/components/feature-request-modal";
 
-import packageJson from "@/package.json";
-
 const repositoryUrl = "https://github.com/yshnv/domdock";
-const appVersion = `v${packageJson.version || "1.0"}`;
 
 export function ArcHeader() {
   const [user, setUser] = useState<unknown>(null);
@@ -50,9 +47,6 @@ export function ArcHeader() {
             <div className="flex items-center gap-1.5">
               <span className="font-heading text-base font-bold tracking-tight">
                 DomDock
-              </span>
-              <span className="rounded-[4px] bg-[#fffadd] dark:bg-amber-900/40 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary border border-primary/20">
-                {appVersion}
               </span>
             </div>
           </Link>

@@ -103,7 +103,7 @@ function DomainAvatar({ name, isWarning }: { name: string; isWarning?: boolean }
 
   return (
     <div
-      className={`relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-[10px] border shadow-sm transition-transform duration-150 group-hover:scale-105 ${
+      className={`relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-[10px] border shadow-sm transition-transform duration-150 group-hover:scale-105 ${
         isWarning
           ? "border-amber-300 bg-[#fffadd]"
           : "border-[#3139fb]/20 bg-white"
@@ -113,7 +113,7 @@ function DomainAvatar({ name, isWarning }: { name: string; isWarning?: boolean }
         <img
           src={faviconUrl}
           alt={`${name} icon`}
-          className="size-5 object-contain"
+          className="size-4.5 object-contain"
           onError={() => setImgError(true)}
         />
       ) : (
@@ -161,24 +161,24 @@ export function DomainHealthWidget() {
   const healthyCount = domains.filter((d) => d.status === "healthy").length;
 
   return (
-    <div className="w-full overflow-hidden rounded-[22px] border border-[#3139fb]/25 bg-[#fffcec] p-4 sm:p-6 arc-shadow-elevated transition-all duration-200 ease-out">
+    <div className="w-full overflow-hidden rounded-[20px] border border-[#3139fb]/25 bg-[#fffcec] p-3.5 sm:p-6 arc-shadow-elevated transition-all duration-200 ease-out">
       {/* Header bar */}
-      <div className="flex flex-col gap-4 border-b border-[#3139fb]/15 pb-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="grid size-9 place-items-center rounded-[10px] bg-[#3139fb] text-white shadow-[0_2px_8px_rgba(49,57,251,0.25)]">
+      <div className="flex flex-col gap-3.5 border-b border-[#3139fb]/15 pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="grid size-8 sm:size-9 place-items-center shrink-0 rounded-[10px] bg-[#3139fb] text-white shadow-[0_2px_8px_rgba(49,57,251,0.25)]">
             <Globe className="size-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-heading text-base font-bold text-[#3139fb]">
+              <h3 className="font-heading text-sm sm:text-base font-bold text-[#3139fb]">
                 Domain Control Room
               </h3>
-              <span className="rounded-[4px] bg-[#fffadd] px-2 py-0.5 font-mono text-[10px] font-bold text-[#3139fb] border border-[#3139fb]/20">
+              <span className="rounded-[4px] bg-[#fffadd] px-1.5 py-0.5 font-mono text-[9px] sm:text-[10px] font-bold text-[#3139fb] border border-[#3139fb]/20">
                 LIVE DEMO
               </span>
             </div>
-            <p className="text-xs text-[#3139fb]/70">
-              Automated RDAP registry & website status tracking
+            <p className="text-[11px] sm:text-xs text-[#3139fb]/70">
+              Automated RDAP registry & status tracking
             </p>
           </div>
         </div>
@@ -187,7 +187,8 @@ export function DomainHealthWidget() {
           {/* Direct Workspace Link */}
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#3139fb] px-3.5 py-1.5 font-body text-xs font-bold text-white shadow-sm transition-all hover:bg-[#3139fb]/90 active:scale-95"
+            aria-label="Go to DomDock Workspace"
+            className="inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-[8px] bg-[#3139fb] px-3 sm:px-3.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#3139fb]/90 active:scale-95"
           >
             <LayoutDashboard className="size-3.5" />
             <span>DomDock Workspace</span>
@@ -195,12 +196,13 @@ export function DomainHealthWidget() {
           </Link>
 
           {/* Tab switcher */}
-          <div className="flex items-center gap-1 rounded-[8px] border border-[#3139fb]/15 bg-white p-1">
+          <div className="flex items-center gap-0.5 rounded-[8px] border border-[#3139fb]/15 bg-white p-1">
             {(["overview", "dns", "activity"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`rounded-[6px] px-3 py-1 text-xs font-semibold uppercase tracking-wider transition-all duration-100 ease-out ${
+                aria-label={`Switch to ${tab} tab`}
+                className={`rounded-[6px] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all duration-100 ease-out ${
                   activeTab === tab
                     ? "bg-[#3139fb] text-white shadow-sm"
                     : "text-[#3139fb]/70 hover:text-[#3139fb] hover:bg-[#fffcec]"
@@ -218,44 +220,44 @@ export function DomainHealthWidget() {
       </div>
 
       {/* Metrics Row */}
-      <div className="my-5 grid grid-cols-3 gap-3">
-        <div className="rounded-[10px] border border-[#3139fb]/15 bg-white p-3.5 arc-shadow-card">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#3139fb]/60">
-            Total Monitored
+      <div className="my-4 sm:my-5 grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="rounded-[10px] border border-[#3139fb]/15 bg-white p-2.5 sm:p-3.5 arc-shadow-card">
+          <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3139fb]/60">
+            Total
           </span>
-          <div className="mt-1 flex items-baseline justify-between">
-            <span className="font-display text-2xl text-[#3139fb]">
+          <div className="mt-0.5 sm:mt-1 flex items-baseline justify-between">
+            <span className="font-display text-xl sm:text-2xl text-[#3139fb]">
               {totalTracked}
             </span>
-            <span className="text-[11px] font-semibold text-[#3139fb]/70">
+            <span className="text-[10px] sm:text-[11px] font-semibold text-[#3139fb]/70">
               Domains
             </span>
           </div>
         </div>
 
-        <div className="rounded-[10px] border border-[#3139fb]/15 bg-white p-3.5 arc-shadow-card">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#3139fb]/60">
-            Healthy Status
+        <div className="rounded-[10px] border border-[#3139fb]/15 bg-white p-2.5 sm:p-3.5 arc-shadow-card">
+          <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3139fb]/60">
+            Healthy
           </span>
-          <div className="mt-1 flex items-baseline justify-between">
-            <span className="font-display text-2xl text-[#3139fb]">
+          <div className="mt-0.5 sm:mt-1 flex items-baseline justify-between">
+            <span className="font-display text-xl sm:text-2xl text-[#3139fb]">
               {healthyCount}
             </span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-600">
               <CheckCircle2 className="size-3" /> 100% UP
             </span>
           </div>
         </div>
 
-        <div className="rounded-[10px] border border-[#3139fb]/20 bg-[#fffadd] p-3.5 arc-shadow-card">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#3139fb]">
-            Action Needed
+        <div className="rounded-[10px] border border-[#3139fb]/20 bg-[#fffadd] p-2.5 sm:p-3.5 arc-shadow-card">
+          <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3139fb]">
+            Expiring
           </span>
-          <div className="mt-1 flex items-baseline justify-between">
-            <span className="font-display text-2xl text-[#3139fb]">
+          <div className="mt-0.5 sm:mt-1 flex items-baseline justify-between">
+            <span className="font-display text-xl sm:text-2xl text-[#3139fb]">
               {warningCount}
             </span>
-            <span className="text-[11px] font-bold text-[#3139fb]">
+            <span className="text-[10px] sm:text-[11px] font-bold text-[#3139fb]">
               {warningCount > 0 ? "Renew soon" : "All clear"}
             </span>
           </div>
@@ -263,23 +265,28 @@ export function DomainHealthWidget() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="mb-4 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-3.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1">
+          <label htmlFor="domain-demo-search" className="sr-only">
+            Search domain or registrar
+          </label>
           <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[#3139fb]/50" />
           <input
+            id="domain-demo-search"
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search domain or registrar..."
-            className="w-full rounded-[8px] border border-[#3139fb]/20 bg-white py-2 pl-8 pr-3 text-xs font-medium text-[#3139fb] placeholder-[#3139fb]/40 outline-none focus:border-[#3139fb] focus:ring-1 focus:ring-[#3139fb]"
+            className="w-full rounded-[8px] border border-[#3139fb]/20 bg-white py-1.5 sm:py-2 pl-8 pr-3 text-xs font-medium text-[#3139fb] placeholder-[#3139fb]/40 outline-none focus:border-[#3139fb] focus:ring-1 focus:ring-[#3139fb]"
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between sm:justify-end gap-2">
           <div className="flex items-center rounded-[8px] border border-[#3139fb]/15 bg-white p-1">
             <button
               onClick={() => setFilter("all")}
-              className={`rounded-[6px] px-2.5 py-1 text-[11px] font-semibold transition-all ${
+              aria-label="Filter all domains"
+              className={`rounded-[6px] px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold transition-all ${
                 filter === "all"
                   ? "bg-[#3139fb] text-white"
                   : "text-[#3139fb]/70 hover:text-[#3139fb]"
@@ -289,7 +296,8 @@ export function DomainHealthWidget() {
             </button>
             <button
               onClick={() => setFilter("warning")}
-              className={`rounded-[6px] px-2.5 py-1 text-[11px] font-semibold transition-all ${
+              aria-label="Filter expiring domains"
+              className={`rounded-[6px] px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold transition-all ${
                 filter === "warning"
                   ? "bg-[#3139fb] text-white"
                   : "text-[#3139fb]/70 hover:text-[#3139fb]"
@@ -302,35 +310,37 @@ export function DomainHealthWidget() {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="inline-flex h-8 items-center gap-1.5 rounded-[8px] border border-[#3139fb]/20 bg-white px-3 text-xs font-semibold text-[#3139fb] transition-all hover:bg-[#fffadd] active:scale-95 disabled:opacity-50"
+            aria-label="Refresh domain status"
+            title="Refresh domain status"
+            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-[8px] border border-[#3139fb]/20 bg-white px-3 text-xs font-semibold text-[#3139fb] transition-all hover:bg-[#fffadd] active:scale-95 disabled:opacity-50"
           >
             <RefreshCw
               className={`size-3.5 ${isRefreshing ? "animate-spin" : ""}`}
             />
-            <span className="hidden sm:inline">Refresh</span>
+            <span>Refresh</span>
           </button>
         </div>
       </div>
 
       {/* Main Tab Content */}
       {activeTab === "overview" && (
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {filteredDomains.map((domain) => {
             const isWarning = domain.expiresInDays <= 30;
             return (
               <div
                 key={domain.id}
-                className="group flex flex-col gap-3 rounded-[12px] border border-[#3139fb]/15 bg-white p-3.5 transition-all duration-150 ease-out hover:border-[#3139fb] hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
+                className="group flex flex-col gap-2.5 sm:gap-3 rounded-[12px] border border-[#3139fb]/15 bg-white p-3 sm:p-3.5 transition-all duration-150 ease-out hover:border-[#3139fb] hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
               >
                 {/* Domain Favicon Avatar & Registrar info */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5 sm:gap-3">
                   <DomainAvatar name={domain.name} isWarning={isWarning} />
 
-                  <div>
-                    <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                       <Link
                         href="/dashboard"
-                        className="font-heading text-sm font-bold text-[#3139fb] hover:underline"
+                        className="truncate font-heading text-xs sm:text-sm font-bold text-[#3139fb] hover:underline"
                       >
                         {domain.name}
                       </Link>
@@ -338,13 +348,14 @@ export function DomainHealthWidget() {
                         href={`https://${domain.name}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[#3139fb]/40 hover:text-[#3139fb]"
+                        className="shrink-0 text-[#3139fb]/40 hover:text-[#3139fb]"
+                        aria-label={`Open website ${domain.name} in a new tab`}
                         title={`Visit ${domain.name}`}
                       >
                         <ExternalLink className="size-3" />
                       </a>
                     </div>
-                    <p className="font-mono text-[11px] text-[#3139fb]/60">
+                    <p className="truncate font-mono text-[10px] sm:text-[11px] text-[#3139fb]/60">
                       {domain.registrar} • Auto-renew:{" "}
                       <span className={domain.autoRenew ? "text-emerald-600 font-bold" : "text-amber-600 font-bold"}>
                         {domain.autoRenew ? "ON" : "OFF"}
@@ -354,24 +365,24 @@ export function DomainHealthWidget() {
                 </div>
 
                 {/* Expiry countdown & status */}
-                <div className="flex items-center gap-4 sm:justify-end">
-                  <div className="text-right">
-                    <span className="font-mono text-[11px] text-[#3139fb]/60">
+                <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t border-[#3139fb]/10 sm:border-0">
+                  <div className="text-left sm:text-right">
+                    <span className="block font-mono text-[10px] sm:text-[11px] text-[#3139fb]/60">
                       Expires {domain.expiryDate}
                     </span>
-                    <div className="flex items-center justify-end gap-1.5">
+                    <div className="flex items-center gap-1 sm:justify-end">
                       <Clock className="size-3 text-[#3139fb]/70" />
                       <span
-                        className={`font-mono text-xs font-bold ${
+                        className={`font-mono text-[11px] sm:text-xs font-bold ${
                           isWarning ? "text-amber-600" : "text-[#3139fb]"
                         }`}
                       >
-                        {domain.expiresInDays} days left
+                        {domain.expiresInDays}d left
                       </span>
                     </div>
                   </div>
 
-                  <div className="w-24">
+                  <div className="hidden sm:block w-20 sm:w-24">
                     <div className="h-2 w-full overflow-hidden rounded-full bg-[#3139fb]/10">
                       <div
                         className={`h-full rounded-full transition-all duration-300 ${
@@ -385,7 +396,7 @@ export function DomainHealthWidget() {
                   </div>
 
                   <span
-                    className={`inline-flex items-center rounded-[6px] px-2.5 py-1 text-[11px] font-bold ${
+                    className={`inline-flex items-center rounded-[6px] px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold ${
                       isWarning
                         ? "bg-[#fffadd] text-[#3139fb] border border-[#3139fb]/20"
                         : "bg-[#3139fb] text-white"
@@ -401,32 +412,32 @@ export function DomainHealthWidget() {
       )}
 
       {activeTab === "dns" && (
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {domains.map((domain) => (
             <div
               key={domain.id}
-              className="flex items-center justify-between rounded-[12px] border border-[#3139fb]/15 bg-white p-3.5 transition-all hover:border-[#3139fb]"
+              className="flex items-center justify-between rounded-[12px] border border-[#3139fb]/15 bg-white p-3 sm:p-3.5 transition-all hover:border-[#3139fb]"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <DomainAvatar name={domain.name} />
-                <div>
+                <div className="truncate">
                   <Link
                     href="/dashboard"
-                    className="font-heading text-sm font-bold text-[#3139fb] hover:underline"
+                    className="truncate font-heading text-xs sm:text-sm font-bold text-[#3139fb] hover:underline"
                   >
                     {domain.name}
                   </Link>
-                  <p className="font-mono text-[11px] text-[#3139fb]/60">
+                  <p className="font-mono text-[10px] sm:text-[11px] text-[#3139fb]/60">
                     DNS latency: {domain.dnsLatency}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="rounded-[6px] bg-[#fffadd] px-2.5 py-1 font-mono text-[11px] font-bold text-[#3139fb]">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <span className="rounded-[6px] bg-[#fffadd] px-2 sm:px-2.5 py-0.5 sm:py-1 font-mono text-[10px] sm:text-[11px] font-bold text-[#3139fb]">
                   SSL: {domain.sslStatus}
                 </span>
-                <span className="inline-flex items-center gap-1 font-mono text-xs font-bold text-emerald-600">
+                <span className="hidden sm:inline-flex items-center gap-1 font-mono text-xs font-bold text-emerald-600">
                   <Zap className="size-3" /> Resolved
                 </span>
               </div>
@@ -436,27 +447,26 @@ export function DomainHealthWidget() {
       )}
 
       {activeTab === "activity" && (
-        <div className="space-y-3 rounded-[12px] border border-[#3139fb]/15 bg-white p-4">
-          <div className="flex items-start gap-3 border-b border-[#3139fb]/10 pb-3">
-            <Sparkles className="size-4 text-[#3139fb]" />
+        <div className="space-y-3 rounded-[12px] border border-[#3139fb]/15 bg-white p-3.5 sm:p-4">
+          <div className="flex items-start gap-2.5 sm:gap-3 border-b border-[#3139fb]/10 pb-3">
+            <Sparkles className="size-4 shrink-0 text-[#3139fb]" />
             <div>
               <p className="text-xs font-bold text-[#3139fb]">
                 RDAP Health Check executed
               </p>
-              <p className="font-mono text-[11px] text-[#3139fb]/60">
-                linear.app expiration synced. 12 days remaining. Warning flag
-                set.
+              <p className="font-mono text-[10px] sm:text-[11px] text-[#3139fb]/60">
+                linear.app expiration synced. 12 days remaining. Warning flag set.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3">
-            <CheckCircle2 className="size-4 text-emerald-600" />
+          <div className="flex items-start gap-2.5 sm:gap-3">
+            <CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
             <div>
               <p className="text-xs font-bold text-[#3139fb]">
                 Daily status check complete
               </p>
-              <p className="font-mono text-[11px] text-[#3139fb]/60">
+              <p className="font-mono text-[10px] sm:text-[11px] text-[#3139fb]/60">
                 6/6 domains online and responding under 15ms latency.
               </p>
             </div>
