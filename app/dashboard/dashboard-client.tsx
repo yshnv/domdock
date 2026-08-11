@@ -367,22 +367,22 @@ export default function DashboardClient({
             </div>
             DomDock Workspace
           </Link>
-          <div className="flex items-center gap-3 text-xs font-semibold text-[#3139fb]">
-            {/* <ThemeToggle /> */}
-            <button
-              onClick={() => setIsFeatureModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#3139fb]/20 bg-[#fffcec] px-3 py-1.5 text-xs font-semibold text-[#3139fb] hover:bg-[#fffadd] transition-colors"
-            >
-              <Lightbulb className="size-3.5 text-[#3139fb]" />
-              <span className="hidden sm:inline">Request Feature</span>
+          <nav className="hidden items-center gap-6 text-xs font-semibold text-foreground/80 lg:flex" aria-label="Main navigation">
+            <Link href="/#features" className="transition-colors hover:text-foreground">Features</Link>
+            <Link href="/#live-inspector" className="transition-colors hover:text-foreground">Live Monitor</Link>
+            <Link href="/dashboard" className="font-bold text-primary transition-colors hover:text-primary/80">Dashboard</Link>
+            <Link href="/#about" className="transition-colors hover:text-foreground">About</Link>
+            <button onClick={() => setIsFeatureModalOpen(true)} className="inline-flex items-center gap-1 text-primary transition-colors hover:underline">
+              <Lightbulb className="size-3.5" /> Request Feature
             </button>
-            <span className="hidden rounded-[6px] bg-[#fffcec] px-3 py-1 font-mono text-[11px] border border-[#3139fb]/20 sm:inline-block">
-              {email}
-            </span>
-            <button
-              onClick={logout}
-              className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#3139fb]/20 bg-white px-3 py-1.5 text-xs font-semibold text-[#3139fb] hover:bg-[#fffadd] transition-colors"
-            >
+            <a href={"https://github.com/yshnv/domdock"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 transition-colors hover:text-foreground">
+              GitHub <ArrowUpRight className="size-3 opacity-60" />
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-3 text-xs font-semibold text-foreground/80">
+            <span className="hidden max-w-48 truncate font-mono text-[11px] sm:inline" title={email}>{email}</span>
+            <button onClick={logout} className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[8px] border border-border bg-card px-3.5 text-xs font-semibold text-primary shadow-sm transition-colors hover:bg-accent">
               <LogOut className="size-3.5" /> Logout
             </button>
           </div>
