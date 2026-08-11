@@ -14,6 +14,14 @@ import {
 import { createClient } from "@/lib/supabase/client";
 // import { ThemeToggle } from "@/components/theme-toggle";
 
+type DnsRecords = {
+  a: string[];
+  aaaa: string[];
+  mx: Array<{ exchange: string; priority: number }>;
+  ns: string[];
+  txt: string[];
+};
+
 type Domain = {
   id: string;
   name: string;
@@ -22,7 +30,7 @@ type Domain = {
   last_checked_at: string | null;
   status_code?: number | null;
   response_time_ms?: number | null;
-  dns_records?: any;
+  dns_records?: DnsRecords | null;
 };
 
 const daysUntil = (date: string | null) => {
