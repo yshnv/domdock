@@ -5,6 +5,7 @@ import { ArcFeatureBento } from "@/components/arc-feature-bento";
 import { ArcHeader } from "@/components/arc-header";
 import { ArcLogoWall } from "@/components/arc-logo-wall";
 import { DomainHealthWidget } from "@/components/domain-health-widget";
+import { DomDockLogo } from "@/components/domdock-logo";
 
 const repositoryUrl = "https://github.com/yshnv/domdock";
 
@@ -91,8 +92,8 @@ export default function Home() {
         <div className="mx-auto flex max-w-[1280px] flex-col gap-4 px-4 sm:px-6 sm:flex-row sm:items-center sm:justify-between text-xs text-[#3139fb]">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 font-heading font-bold">
-              <span className="grid size-5 place-items-center rounded-[4px] bg-[#3139fb] text-[10px] text-white">
-                D
+              <span className="grid size-5 place-items-center rounded-[4px] bg-[#3139fb] text-white">
+                <DomDockLogo className="size-3 text-white" />
               </span>
               DomDock
             </div>
