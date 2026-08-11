@@ -1,58 +1,99 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Suspense } from "react";
+import {
+  ArrowRight,
+  CalendarClock,
+  Check,
+  CircleCheck,
+  Code2,
+  Github,
+  Globe2,
+  Infinity,
+  Mail,
+  Menu,
+  ShieldCheck,
+  X,
+} from "lucide-react";
+
+const repositoryUrl = "https://github.com/yshnv/domdock";
+const signInUrl = "/auth/login";
+const signUpUrl = "/auth/sign-up";
+
+function Logo() {
+  return (
+    <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight" aria-label="DomDock home">
+      <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+        <span className="relative block h-4 w-4 rounded-b-md border-2 border-current border-t-0 after:absolute after:-bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-current" />
+      </span>
+      <span className="text-[17px]">DomDock</span>
+    </Link>
+  );
+}
+
+function Header() {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all ${scrolled ? "border-b border-border/80 bg-background/90 shadow-sm backdrop-blur-xl" : "bg-transparent"}`}>
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8">
+        <Logo />
+        <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex" aria-label="Main navigation">
+          <a href="#how-it-works" className="transition-colors hover:text-foreground">How it works</a>
+          <a href={repositoryUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground">GitHub <ArrowRight className="size-3.5" /></a>
+        </nav>
+        <div className="hidden items-center gap-3 md:flex">
+          <Link href={signInUrl} className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Sign in</Link>
+          <Link href={signUpUrl} className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5">Get started</Link>
+        </div>
+        <button className="grid size-10 place-items-center rounded-lg border border-border md:hidden" onClick={() => setOpen(!open)} aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open}>{open ? <X /> : <Menu />}</button>
+      </div>
+      {open && <div className="border-t border-border bg-background px-5 py-5 md:hidden"><nav className="flex flex-col gap-4 text-sm" aria-label="Mobile navigation"><a href="#how-it-works" onClick={() => setOpen(false)}>How it works</a><a href={repositoryUrl} target="_blank" rel="noreferrer">GitHub</a><div className="flex gap-3 border-t border-border pt-4"><Link href={signInUrl} className="flex-1 rounded-lg border border-border px-4 py-2.5 text-center">Sign in</Link><Link href={signUpUrl} className="flex-1 rounded-lg bg-primary px-4 py-2.5 text-center text-primary-foreground">Get started</Link></div></nav></div>}
+    </header>
+  );
+}
+
+const domains = [
+  ["acme.com", "Sep 24, 2026", "44 days", "Healthy"],
+  ["myproject.in", "Aug 28, 2026", "17 days", "Renew soon"],
+  ["startup.dev", "Dec 12, 2026", "123 days", "Healthy"],
+];
+
+function DashboardPreview({ large = false }: { large?: boolean }) {
+  return <div className={`relative overflow-hidden rounded-2xl border border-border bg-card shadow-[0_20px_60px_-30px_hsl(var(--primary)/.35)] ${large ? "w-full" : "mx-auto max-w-5xl"}`}>
+    <div className="flex items-center gap-2 border-b border-border px-4 py-3 sm:px-6"><div className="flex gap-1.5"><i className="size-2 rounded-full bg-muted-foreground/30" /><i className="size-2 rounded-full bg-muted-foreground/30" /><i className="size-2 rounded-full bg-muted-foreground/30" /></div><div className="ml-3 flex items-center gap-2 text-xs text-muted-foreground"><span className="grid size-5 place-items-center rounded bg-primary/10 text-primary"><Globe2 className="size-3" /></span> app.domdock.dev</div></div>
+    <div className="grid min-h-[280px] md:grid-cols-[180px_1fr]">
+      <aside className="hidden border-r border-border bg-muted/30 p-4 md:block"><div className="mb-8 flex items-center gap-2 text-sm font-semibold"><span className="grid size-6 place-items-center rounded-md bg-primary text-primary-foreground"><span className="h-3 w-3 rounded-b border border-current border-t-0" /></span> DomDock</div><div className="flex flex-col gap-2 text-xs text-muted-foreground"><span className="rounded-md bg-primary/10 px-3 py-2 font-medium text-primary">Overview</span><span className="px-3 py-2">Settings</span></div></aside>
+      <div className="min-w-0 p-5 sm:p-7"><div className="mb-6 flex items-center justify-between"><div><p className="text-xs text-muted-foreground">Workspace</p><h3 className="text-lg font-semibold tracking-tight">Your domains</h3></div><button className="rounded-md bg-primary px-3 py-2 text-xs font-medium text-primary-foreground">+ Add domain</button></div><div className="mb-6 grid grid-cols-2 gap-3"><div className="rounded-lg border border-border p-3"><p className="text-xs text-muted-foreground">Domains</p><p className="mt-1 text-xl font-semibold">12</p></div><div className="rounded-lg border border-border p-3"><p className="text-xs text-muted-foreground">Expiring soon</p><p className="mt-1 text-xl font-semibold text-amber-600">2</p></div></div><div className="overflow-x-auto"><div className="min-w-[480px] text-xs"><div className="grid grid-cols-[1.4fr_1fr_1fr_0.8fr] gap-3 border-b border-border pb-2 font-medium text-muted-foreground"><span>Domain</span><span>Expiry date</span><span>Remaining</span><span>Status</span></div>{domains.map(([domain, date, remaining, status]) => <div key={domain} className="grid grid-cols-[1.4fr_1fr_1fr_0.8fr] items-center gap-3 border-b border-border/70 py-3"><span className="font-medium text-foreground">{domain}</span><span className="text-muted-foreground">{date}</span><span className="text-muted-foreground">{remaining}</span><span className={status === "Healthy" ? "inline-flex w-fit items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-emerald-700" : "inline-flex w-fit items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-amber-700"}><span className="size-1.5 rounded-full bg-current" />{status}</span></div>)}</div></div></div>
+    </div>
+  </div>;
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) { return <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-primary">{children}</p>; }
+function Feature({ icon: Icon, title, description }: { icon: React.ElementType; title: string; description: string }) { return <div className="group rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><span className="mb-5 grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"><Icon className="size-5" /></span><h3 className="mb-2 font-semibold">{title}</h3><p className="text-sm leading-6 text-muted-foreground">{description}</p></div>; }
 
 export default function Home() {
-  return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
-        </div>
-
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
-      </div>
-    </main>
-  );
+  return <main className="overflow-hidden">
+    <Header />
+    <section className="relative px-5 pb-20 pt-36 sm:px-8 sm:pb-28 sm:pt-44"><div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[620px] bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/.10),transparent_62%)]" /><div className="mx-auto max-w-4xl text-center"><div className="mb-7 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs font-medium text-primary"><span className="size-1.5 rounded-full bg-primary" /> Free & open source</div><h1 className="text-balance text-5xl font-semibold tracking-[-0.045em] text-foreground sm:text-7xl">Never let a domain <span className="text-primary">expire.</span></h1><p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-7 text-muted-foreground sm:text-lg">Track your domains, know when they expire, and get reminded before it&apos;s time to renew.</p><div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"><Link href={signUpUrl} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-transform hover:-translate-y-0.5 sm:w-auto">Start tracking for free <ArrowRight className="size-4" /></Link><a href={repositoryUrl} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:bg-muted sm:w-auto"><Github className="size-4" /> View on GitHub</a></div><p className="mt-5 text-xs text-muted-foreground">Free forever <span className="mx-2 text-border">·</span> Open source <span className="mx-2 text-border">·</span> No credit card</p></div><div className="mt-16 sm:mt-20"><DashboardPreview /></div></section>
+    <section className="border-y border-border bg-muted/30 px-5 py-7 sm:px-8"><div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-5 sm:flex-row"><p className="text-center text-sm text-muted-foreground sm:text-left">Built for developers, creators, freelancers and small teams.</p><div className="flex flex-wrap justify-center gap-x-6 gap-y-3 text-xs font-medium text-muted-foreground"><span className="inline-flex items-center gap-1.5"><CircleCheck className="size-3.5 text-primary" /> Free forever</span><span className="inline-flex items-center gap-1.5"><Code2 className="size-3.5 text-primary" /> Open source</span><span className="inline-flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-primary" /> Privacy focused</span><span className="inline-flex items-center gap-1.5"><Mail className="size-3.5 text-primary" /> Email reminders</span></div></div></section>
+    <section className="px-5 py-24 sm:px-8 sm:py-32"><div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-24"><div><SectionLabel>The problem</SectionLabel><h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Domains are easy to forget.</h2><p className="mt-5 max-w-md leading-7 text-muted-foreground">You buy a domain, build something on it, and months later you&apos;re suddenly trying to remember when it renews.</p><p className="mt-6 text-sm font-medium text-primary">DomDock steps in before the last step.</p></div><div className="rounded-xl border border-border bg-muted/30 p-5 sm:p-8"><div className="flex flex-col gap-0">{["Buy domain", "Build website", "Forget renewal date", "Domain expires"].map((item, i) => <div key={item} className="flex items-center gap-4"><div className={`relative grid size-9 shrink-0 place-items-center rounded-full border text-xs font-semibold ${i === 3 ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-border bg-card text-muted-foreground"}`}>{i + 1}{i < 3 && <span className="absolute left-1/2 top-9 h-7 w-px bg-border" />}</div><div className={`flex-1 border-b border-border py-5 text-sm ${i === 3 ? "font-medium text-destructive" : "text-muted-foreground"}`}>{item}</div></div>)}</div></div></div></section>
+    <section id="how-it-works" className="bg-primary px-5 py-24 text-primary-foreground sm:px-8 sm:py-32"><div className="mx-auto max-w-6xl"><div className="max-w-xl"><p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/60">How it works</p><h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Set it once. We&apos;ll keep watch.</h2></div><div className="mt-14 grid gap-8 md:grid-cols-3">{[["01", "Add your domain", "Enter a domain and DomDock checks its registration and expiry information."], ["02", "We keep track", "Your domains stay organized in one simple list with their renewal dates."], ["03", "Get reminded", "Receive an email before your domain expires so you have time to renew it."]].map(([number, title, description]) => <div key={number} className="border-t border-primary-foreground/20 pt-5"><span className="font-mono text-sm text-primary-foreground/50">{number}</span><h3 className="mt-10 text-lg font-semibold">{title}</h3><p className="mt-3 text-sm leading-6 text-primary-foreground/65">{description}</p></div>)}</div></div></section>
+    <section className="px-5 py-24 sm:px-8 sm:py-32"><div className="mx-auto max-w-6xl"><div className="max-w-xl"><SectionLabel>Everything you need</SectionLabel><h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Simple by design.</h2></div><div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"><Feature icon={CalendarClock} title="Expiry tracking" description="See exactly when each domain expires and how many days are left." /><Feature icon={Mail} title="Email reminders" description="Get notified before expiry so renewals never become a last-minute surprise." /><Feature icon={Globe2} title="Automatic domain lookup" description="Automatically retrieve domain registration and expiry information." /><Feature icon={ShieldCheck} title="Privacy focused" description="Keep your domain tracking data private and secure." /><Feature icon={Github} title="Open source" description="The source code is public, transparent and available for everyone." /><Feature icon={Infinity} title="Free forever" description="No premium tiers, no hidden limits and no credit card required." /></div></div></section>
+    <section className="bg-muted/40 px-5 py-24 sm:px-8 sm:py-32"><div className="mx-auto max-w-6xl"><div className="mb-12 max-w-xl"><SectionLabel>Your domains, at a glance</SectionLabel><h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">One place for all your domains.</h2><p className="mt-5 leading-7 text-muted-foreground">Stop searching through registrar accounts and old emails. DomDock gives you a simple overview of what expires and when.</p></div><DashboardPreview large /></div></section>
+    <section className="px-5 py-24 sm:px-8 sm:py-32"><div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-24"><div><SectionLabel>Open source</SectionLabel><h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Built in the open.</h2><p className="mt-5 max-w-lg leading-7 text-muted-foreground">DomDock is free and open source. Inspect the code, contribute improvements, report issues or run your own instance.</p><a href={repositoryUrl} target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">View source on GitHub <ArrowRight className="size-4" /></a></div><div className="overflow-hidden rounded-xl border border-border bg-[#111827] font-mono text-xs text-slate-300 shadow-xl"><div className="flex items-center gap-2 border-b border-slate-700 px-4 py-3"><Github className="size-4" /><span className="text-slate-400">yshnv / domdock</span><span className="ml-auto rounded bg-slate-700 px-2 py-0.5 text-[10px]">Public</span></div><div className="p-5 leading-7"><div><span className="text-slate-500">{"// "}</span><span className="text-slate-400">Track what matters.</span></div><div><span className="text-purple-300">const</span> <span className="text-cyan-300">reminder</span> = <span className="text-amber-200">await</span> <span className="text-blue-300">domdock</span>.<span className="text-cyan-300">watch</span>({`{`}</div><div className="pl-5"><span className="text-emerald-300">domains</span>: [<span className="text-green-300">&quot;acme.com&quot;</span>, <span className="text-green-300">&quot;startup.dev&quot;</span>],</div><div className="pl-5"><span className="text-emerald-300">notifyBefore</span>: <span className="text-orange-300">30</span>,</div><div>{`}`});</div></div></div></div></section>
+    <section className="border-y border-border px-5 py-24 sm:px-8 sm:py-32"><div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:gap-24"><div><SectionLabel>Your domains stay yours</SectionLabel><h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Private. Secure. No registrar passwords.</h2><p className="mt-5 leading-7 text-muted-foreground">DomDock is designed to track expiry information without requiring access to your registrar account.</p></div><ul className="grid gap-4 sm:grid-cols-2">{["No registrar passwords required", "Secure authentication", "Minimal data collection", "Open source and auditable"].map(item => <li key={item} className="flex items-start gap-3 rounded-lg border border-border p-4 text-sm"><Check className="mt-0.5 size-4 shrink-0 text-primary" />{item}</li>)}</ul></div></section>
+    <section className="px-5 py-24 sm:px-8 sm:py-32"><div className="mx-auto grid max-w-6xl items-center gap-12 rounded-2xl bg-muted/50 p-8 sm:p-12 lg:grid-cols-2 lg:p-16"><div><SectionLabel>Free forever</SectionLabel><h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Free means free.</h2><p className="mt-5 leading-7 text-muted-foreground">DomDock is free to use and will always be free.</p></div><ul className="grid gap-3 sm:grid-cols-2">{["Unlimited domain tracking", "Expiry monitoring", "Email reminders", "Open-source code", "No credit card"].map(item => <li key={item} className="flex items-center gap-3 text-sm font-medium"><Check className="size-4 text-primary" />{item}</li>)}</ul></div></section>
+    <section className="px-5 pb-24 sm:px-8 sm:pb-32"><div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl bg-primary px-6 py-16 text-center text-primary-foreground sm:px-12 sm:py-20"><div className="pointer-events-none absolute inset-0 opacity-10 [background-image:linear-gradient(hsl(var(--primary-foreground))_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary-foreground))_1px,transparent_1px)] [background-size:32px_32px]" /><div className="relative"><h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Keep your domains on your radar.</h2><p className="mx-auto mt-5 max-w-lg leading-7 text-primary-foreground/70">Add your domains once and let DomDock remind you before they expire.</p><div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row"><Link href={signUpUrl} className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-foreground px-5 py-3 text-sm font-semibold text-primary transition-transform hover:-translate-y-0.5">Start tracking for free <ArrowRight className="size-4" /></Link><a href={repositoryUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary-foreground/25 px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground/10"><Github className="size-4" /> View source on GitHub</a></div></div></div></section>
+    <footer className="border-t border-border px-5 py-12 sm:px-8"><div className="mx-auto flex max-w-6xl flex-col gap-8 sm:flex-row sm:items-start sm:justify-between"><div><Logo /><p className="mt-4 max-w-xs text-sm leading-6 text-muted-foreground">A free and open-source domain expiry tracker.</p></div><div className="flex gap-8 text-sm text-muted-foreground"><a href={repositoryUrl} target="_blank" rel="noreferrer" className="hover:text-foreground">GitHub</a><Link href={signInUrl} className="hover:text-foreground">Sign in</Link><Link href={signUpUrl} className="hover:text-foreground">Get started</Link></div></div><div className="mx-auto mt-10 max-w-6xl border-t border-border pt-5 text-xs text-muted-foreground">© 2026 DomDock · Free and open source</div></footer>
+  </main>;
 }
