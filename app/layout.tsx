@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   authors: [{ name: "DomDock Team", url: defaultUrl }],
   creator: "DomDock",
   publisher: "DomDock",
+  verification: {
+    google: "qqRJmG0Jxd46iySEguo0wUqEvzQ4U7ygBXGkQCvAIv8"
+  },
   openGraph: {
     title: "DomDock — Calm Domain & RDAP Monitoring Workspace",
     description:
